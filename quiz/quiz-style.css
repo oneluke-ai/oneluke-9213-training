@@ -1,0 +1,690 @@
+/* ============================================================
+   研修クイズ 共通スタイル ver004
+   白地＋ティファニーブルー＋ポップな差し色（お店のブランドカラーに合わせて）
+   2026-08-22: 女性スタッフが多いお店のため、端末のダークモード設定に関わらず
+   常にこのライトな配色で表示する仕様に固定（ダークモード対応をやめた）。
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Figtree:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* ---- カラートークン（ライト） ---- */
+  --ink: #263539;
+  --ink-soft: #55696d;
+  --muted: #92a5a8;
+  --paper: #ffffff;
+  --card: #ffffff;
+  --card-line: #e3edec;
+  --tiffany: #0abab5;
+  --tiffany-deep: #078f8b;
+  --tiffany-tint: #e3f7f5;
+  --orange: #f07830;
+  --orange-deep: #d9611c;
+  --orange-tint: #ffe6d2;
+  --green: #3fa34d;
+  --green-deep: #2f8a3d;
+  --green-tint: #e2f5e0;
+  --red: #e0523f;
+  --red-tint: #fbe3de;
+  --purple: #7a5cc4;
+  --shadow: 190 30% 25%;
+
+  /* ブランドマークカラー：マスコット・カットバッジ専用の固定トークン。
+     テーマが変わっても常に同じティファニーブルーを保つため、
+     ライト/ダークどちらの :root ブロックでも再定義しない（意図的に固定）。 */
+  --brand-tiffany: #0abab5;
+  --brand-orange: #f07830;
+  --brand-orange-deep: #d9611c;
+}
+
+/* ダークモード対応は行わない（お店のカラーに合わせて常に上記のライト配色で固定表示する） */
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: "Figtree", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 20px 16px 64px;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.65;
+  font-size: 16px;
+  /* .status-barが100vw+負のmarginで画面幅いっぱいに広がる仕組みのため、
+     スクロールバー分だけ100vwが実際の表示幅より広くなるOS（Windows等）で
+     横スクロールが出てしまう。ここで確実に抑える */
+  overflow-x: hidden;
+}
+
+h1, .display {
+  font-family: "Fredoka", "Hiragino Kaku Gothic ProN", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+/* ---- 固定ステータスバー（連続記録・ポイント） ---- */
+.status-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-bottom: 16px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--card-line);
+}
+.status-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: "Fredoka", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  border-radius: 99px;
+  padding: 5px 14px;
+}
+.status-chip span { font-variant-numeric: tabular-nums; }
+
+/* ---- 週間カレンダー ---- */
+.week-cal {
+  display: flex;
+  justify-content: space-between;
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  border-radius: 18px;
+  padding: 14px 12px;
+  margin-bottom: 20px;
+}
+.week-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.week-day-label {
+  font-family: "Fredoka", sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.week-day-label.today { color: var(--orange-deep); }
+.week-day-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--card-line);
+}
+.week-day-dot.done {
+  background: var(--orange);
+  box-shadow: 0 0 0 3px var(--orange-tint);
+}
+
+/* ---- ヘッダー／マスコット ---- */
+.hub-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 10px;
+  color: var(--tiffany-deep);
+  text-decoration: none;
+  font-family: "Fredoka", sans-serif;
+  font-weight: 600;
+  font-size: 13.5px;
+}
+.hub-link:hover { text-decoration: underline; }
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.paw-mark {
+  flex: none;
+  width: 44px;
+  height: 44px;
+}
+.brand-row h1 {
+  font-size: 22px;
+  margin: 0;
+  color: var(--tiffany-deep);
+}
+.sub {
+  color: var(--muted);
+  font-size: 13.5px;
+  margin: 2px 0 20px;
+}
+/* 動画確認ゲートのサムネイル画像（config.thumbnail未指定の時は表示されない） */
+.video-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 18px;
+  margin-bottom: 14px;
+  box-shadow: 0 8px 24px -16px hsl(var(--shadow) / 0.4);
+}
+
+.video-info {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  background: var(--tiffany-tint);
+  border: 1px solid var(--card-line);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+}
+.video-info a { color: var(--tiffany-deep); font-weight: 600; text-decoration: none; }
+.video-info a:hover { text-decoration: underline; }
+
+/* ---- 進捗バー（回答中はステータスバーの下に固定表示） ---- */
+.progress-track {
+  position: sticky;
+  top: 48px;
+  z-index: 15;
+  display: flex;
+  gap: 6px;
+  margin: 0 -16px 22px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--card-line);
+}
+.progress-dot {
+  flex: 1;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--card-line);
+  transition: background 0.25s ease;
+}
+.progress-dot.done { background: var(--orange); }
+.progress-dot.current { background: var(--tiffany); }
+/* 動画確認ステップ用の1コマ目：問題に答えて進む色（オレンジ）とは別扱いだと分かるよう、
+   常にブランドカラー（ティファニーブルー）で固定表示する（エンダウド・プログレス効果） */
+.progress-dot--start { background: var(--brand-tiffany); }
+
+/* ---- 名前入力画面 ---- */
+#nameScreen {
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  border-radius: 24px;
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: 0 10px 30px -18px hsl(var(--shadow) / 0.3);
+}
+#nameScreen .mascot-big { width: 84px; height: 84px; margin: 0 auto 14px; }
+#videoConfirmScreen .mascot-big { width: 56px; height: 56px; margin: 0 auto 12px; }
+/* 「▶ 動画を見る」リンクだけオレンジ色＋下線で目立たせる（他ページのhub-linkには影響させない） */
+#videoConfirmScreen .hub-link {
+  color: var(--orange-deep);
+  text-decoration: underline;
+  font-size: 14.5px;
+}
+#videoConfirmScreen .hub-link:hover { color: var(--orange); }
+#nameScreen p {
+  font-family: "Fredoka", sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--tiffany-deep);
+  margin: 0 0 16px;
+}
+#nameScreen input,
+#nameScreen select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px 16px;
+  font-size: 16px;
+  font-family: "Figtree", sans-serif;
+  border: 2px solid var(--card-line);
+  border-radius: 14px;
+  margin-bottom: 18px;
+  background: var(--paper);
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+#nameScreen input:focus,
+#nameScreen select:focus { border-color: var(--tiffany); }
+/* select独自の見た目（矢印アイコン等）をinputと揃えるための最低限の上書き */
+#nameScreen select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2355696d' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 18px;
+  padding-right: 42px;
+}
+
+.btn-primary {
+  background: var(--orange);
+  color: #ffffff;
+  border: none;
+  border-radius: 16px;
+  padding: 15px 28px;
+  font-family: "Fredoka", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 5px 0 var(--orange-deep);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.btn-primary:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--orange-deep); }
+.btn-primary:disabled {
+  background: var(--card-line);
+  color: var(--muted);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* 店舗検索欄：都道府県・電話番号・店舗名のどれで探しているか分かるよう、虫眼鏡アイコンを添える */
+#nameScreen .store-search {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2392a5a8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 14px center;
+  background-size: 18px;
+  padding-left: 42px;
+}
+
+/* 入力欄のラベル（プレースホルダーだけだと入力中に何の欄か消えてしまうため、常時表示のラベルを添える） */
+#nameScreen .field-label {
+  display: block;
+  text-align: left;
+  font-family: "Fredoka", sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin: 0 0 6px;
+}
+/* 「アカウントがある方はこちら」の一文。主要な案内文（#nameScreen p）とは別扱いで控えめに */
+#nameScreen .alt-action {
+  font-family: "Figtree", sans-serif;
+  font-weight: 400;
+  font-size: 13.5px;
+  color: var(--muted);
+  margin: 16px 0 0;
+}
+/* テキストリンク調のボタン（例：「アカウントがある方はこちら」）。主ボタンと競合しないよう控えめに */
+.link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--tiffany-deep);
+  font-family: "Figtree", sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.link-btn:hover { color: var(--tiffany); }
+.link-btn:disabled { color: var(--muted); cursor: not-allowed; text-decoration: none; }
+#restoreStatus {
+  display: none;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+/* ---- クイズ画面 ---- */
+.q {
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  border-radius: 20px;
+  padding: 20px 20px 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 24px -18px hsl(var(--shadow) / 0.3);
+  animation: card-in 0.28s ease both;
+}
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.q-eyebrow {
+  font-family: "Fredoka", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--tiffany-deep);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.q-title {
+  font-weight: 700;
+  font-size: 16.5px;
+  color: var(--ink);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+.choice {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 13px 16px;
+  margin: 8px 0 0;
+  border: 2px solid var(--card-line);
+  border-radius: 14px;
+  background: var(--card);
+  color: var(--ink);
+  font-family: "Figtree", sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.12s ease, background 0.12s ease, transform 0.08s ease;
+}
+.choice:hover { border-color: var(--tiffany); }
+.choice:active { transform: scale(0.99); }
+.choice.selected { background: var(--tiffany-tint); border-color: var(--tiffany); font-weight: 600; }
+.choice.correct { background: var(--green-tint); border-color: var(--green); font-weight: 700; }
+.choice.wrong { background: var(--red-tint); border-color: var(--red); }
+.explanation {
+  display: none;
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: var(--orange-tint);
+  border-radius: 12px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+/* ---- 結果画面 ---- */
+#resultScreen { display: none; }
+.score-card {
+  background: var(--card);
+  color: var(--ink);
+  border: 3px solid var(--brand-tiffany);
+  border-radius: 24px;
+  padding: 32px 24px 28px;
+  text-align: center;
+  margin-bottom: 22px;
+  position: relative;
+  overflow: hidden;
+}
+.score-card::before {
+  /* 四隅にポップな紙吹雪ドット */
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle 6px at 12% 18%, var(--brand-orange) 98%, transparent 100%),
+    radial-gradient(circle 5px at 88% 22%, var(--purple) 98%, transparent 100%),
+    radial-gradient(circle 5px at 20% 86%, var(--green) 98%, transparent 100%),
+    radial-gradient(circle 6px at 85% 82%, var(--brand-tiffany) 98%, transparent 100%);
+  opacity: 0.7;
+}
+.score-card .mascot-big { width: 72px; height: 72px; margin: 0 auto 10px; position: relative; }
+.score-card .score-name {
+  font-size: 13.5px;
+  color: var(--muted);
+  margin-top: 2px;
+  position: relative;
+}
+.score-card .score-num {
+  font-family: "Fredoka", sans-serif;
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 4px 0 0;
+  color: var(--tiffany-deep);
+  position: relative;
+}
+.score-card .score-label {
+  font-family: "Fredoka", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  position: relative;
+}
+.score-card .score-msg {
+  margin-top: 14px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--orange-deep);
+  position: relative;
+}
+.score-card.perfect { border-color: var(--brand-orange); background: var(--orange-tint); }
+.score-card.perfect .score-num { color: var(--brand-orange-deep); }
+.score-card.perfect .score-msg { color: var(--brand-orange-deep); }
+
+.score-card .xp-gain {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 5px 14px;
+  background: var(--tiffany-tint);
+  color: var(--tiffany-deep);
+  border-radius: 99px;
+  font-family: "Fredoka", sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  position: relative;
+}
+
+/* ---- 苦手な問題だけ復習 ---- */
+.review-cta { text-align: center; margin: 22px 0; }
+.review-cta .btn-primary { background: var(--tiffany); box-shadow: 0 5px 0 var(--tiffany-deep); }
+.review-cta .btn-primary:active { box-shadow: 0 2px 0 var(--tiffany-deep); }
+#reviewScreen { display: none; }
+.review-done {
+  background: var(--card);
+  border: 2px solid var(--green);
+  border-radius: 20px;
+  padding: 26px 20px;
+  text-align: center;
+}
+.review-done p {
+  font-family: "Fredoka", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--green-deep);
+  margin: 0;
+}
+
+#submitBtnWrap { text-align: center; margin: 22px 0 4px; }
+.retry-link { text-align: center; margin-top: 26px; }
+.retry-link a {
+  display: inline-block;
+  color: var(--tiffany-deep);
+  text-decoration: none;
+  font-family: "Fredoka", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 18px;
+  border: 2px solid var(--card-line);
+  border-radius: 12px;
+}
+.retry-link a:hover { border-color: var(--tiffany); color: var(--tiffany-deep); }
+
+/* ---- クイズ一覧（ハブ）：レッスンパス ---- */
+.trail-intro {
+  background: var(--tiffany-tint);
+  border: 1px solid var(--card-line);
+  border-radius: 20px;
+  padding: 18px 20px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.trail-intro .mascot-big { width: 52px; height: 52px; flex: none; }
+.trail-intro p { margin: 0; font-size: 14px; color: var(--ink-soft); }
+.trail-intro strong { color: var(--tiffany-deep); }
+
+.trail {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0 8px;
+  position: relative;
+}
+.trail::before {
+  content: "";
+  position: absolute;
+  top: 28px;
+  bottom: 28px;
+  left: 50%;
+  width: 4px;
+  transform: translateX(-50%);
+  background: repeating-linear-gradient(
+    to bottom, var(--card-line) 0 10px, transparent 10px 20px
+  );
+  z-index: 0;
+}
+.trail-node {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+.trail-node.align-left { justify-content: flex-start; }
+.trail-node.align-right { justify-content: flex-end; }
+
+.node-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 78%;
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  border-radius: 18px;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: var(--ink);
+  box-shadow: 0 8px 20px -16px hsl(var(--shadow) / 0.35);
+  transition: transform 0.12s ease, border-color 0.12s ease;
+  overflow: hidden;
+}
+.node-card:hover { transform: translateY(-2px); border-color: var(--tiffany); }
+
+/* クリア済み：淡くグレーアウト＋斜めのClearスタンプ。何度でも再挑戦できるようクリック自体は生かす */
+.node-card.cleared { opacity: 0.55; }
+.node-card.cleared:hover { opacity: 0.85; }
+/* 未解放（前のクイズをクリアするまで挑戦できない）：淡くグレーアウト＋鍵アイコン。クリックしても遷移しない */
+.node-card.locked {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+.node-card.locked:hover { transform: none; border-color: var(--card-line); }
+.node-card.locked .node-badge { background: var(--muted); }
+.node-card .lock-badge {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 18px;
+  line-height: 1;
+}
+.node-card .lock-hint {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.node-card .clear-stamp {
+  position: absolute;
+  top: 14px;
+  right: -28px;
+  width: 120px;
+  padding: 3px 0;
+  background: var(--green-deep);
+  color: #fff;
+  font-family: "Fredoka", sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+  transform: rotate(28deg);
+  box-shadow: 0 2px 6px hsl(var(--shadow) / 0.25);
+  pointer-events: none;
+}
+/* パーフェクト（満点）称号：進行の解放条件ではなく、達成した人にだけ付く星バッジ */
+.node-card .perfect-badge {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 15px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 1px hsl(var(--shadow) / 0.3));
+}
+.node-badge {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Fredoka", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: #fff;
+}
+.node-body { min-width: 0; }
+.node-cat {
+  font-family: "Fredoka", sans-serif;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--tiffany-deep);
+}
+.node-title {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+  margin-top: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.node-meta {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* ---- レッスンパスの続き（今後もクイズが増えていく気配） ---- */
+.trail-tail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 4px;
+  padding-bottom: 8px;
+}
+.trail-tail .tail-paw { width: 24px; height: 24px; fill: var(--tiffany); }
+.trail-tail .tail-paw:nth-of-type(1) { opacity: 0.5; margin-left: 18px; }
+.trail-tail .tail-paw:nth-of-type(2) { width: 19px; height: 19px; opacity: 0.32; margin-right: 26px; }
+.trail-tail .tail-paw:nth-of-type(3) { width: 15px; height: 15px; opacity: 0.18; margin-left: 10px; }
+.trail-tail p {
+  margin: 2px 0 0;
+  font-family: "Fredoka", sans-serif;
+  font-weight: 600;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+/* カテゴリ別バッジ色（ポップに4色使い分け） */
+.cat-inu { background: var(--brand-orange); }
+.cat-cut { background: var(--brand-tiffany); }
+.cat-groomer { background: var(--green-deep); }
+.cat-seminar { background: var(--purple); }
