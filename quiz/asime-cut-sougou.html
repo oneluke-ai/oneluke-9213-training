@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>アシメカット総合 クイズ</title>
+<link rel="stylesheet" href="quiz-style.css">
+</head>
+<body>
+<div id="app"></div>
+<script src="quiz-engine.js"></script>
+<script>
+initQuiz({
+  quiz_id: "asime-cut-sougou",
+  hub_url: "index.html",
+  video_title: "アシメカット 第一弾〜第四弾（総合）",
+  category: "カット",
+  source_url: "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/a74c71af-c05b-4fec-9eab-0b3175242ae0",
+  thumbnail: "images/asime-cut-sougou.jpg",
+  questions: [
+    {
+      q: "（第一弾）マズル周りをコーミングする際、どこを中心に放射状に行うと説明されていた？",
+      choices: ["鼻", "目", "顎", "耳"],
+      answer: 0,
+      explanation: "「鼻を中心に放射状にコーミングします」と説明されていた。"
+    },
+    {
+      q: "（第三弾）マズルの仕上がりイメージとして紹介されていたカットスタイルは？",
+      choices: ["マッシュルームカット", "テディベアカット", "ライオンカット", "パピーカット"],
+      answer: 0,
+      explanation: "「イメージはマッシュルームカットで切っていきます」と説明されていた。"
+    },
+    {
+      q: "（第三弾）マズルのデザインの決め方について、どう説明されていた？",
+      choices: [
+        "好みにもよるので飼い主さんの好み",
+        "必ず一律の規格に合わせる",
+        "犬種によって完全に固定されている",
+        "その日の気分で決める"
+      ],
+      answer: 0,
+      explanation: "「ただこれは好みにもよるので飼い主さんの好み」と説明されていた。"
+    },
+    {
+      q: "（第四弾）口周りの仕上げで、唇のどのあたりも整えると説明されていた？",
+      choices: ["唇の横", "唇の下のみ", "唇の内側", "唇には触れない"],
+      answer: 0,
+      explanation: "「リップ横もとります」と説明されていた。"
+    },
+    {
+      q: "（第二弾）バランスの良い耳の仕上げ方として説明されていたのは？",
+      choices: [
+        "耳付きの延長線が一番出っ張るようにカットする",
+        "耳付きの延長線より内側に収まるようにカットする",
+        "耳の形は仕上げに関係しない",
+        "左右の耳を完全に対称にする"
+      ],
+      answer: 0,
+      explanation: "「耳付きの延長線が一番出っ張るようにカットするとバランスが良いです」と説明されていた。"
+    }
+  ]
+});
+</script>
+</body>
+</html>
