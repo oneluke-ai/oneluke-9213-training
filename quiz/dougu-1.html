@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>研修クイズ｜道具の説明①</title>
+<link rel="stylesheet" href="quiz-style.css">
+</head>
+<body>
+
+<div id="app"></div>
+
+<script src="quiz-engine.js"></script>
+<script>
+initQuiz({
+  quiz_id: "dougu-1",
+  hub_url: "index.html",
+  video_title: "道具の説明①",
+  category: "グルーマー",
+  source_url: "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/12fdd656-1701-401d-a892-7476dff6a85b",
+  thumbnail: "images/dougu-1.jpg",
+  questions: [
+    {
+      q: "動画で紹介されていたクリッパーは、何mmまで対応すると説明されていた？",
+      choices: ["15mm", "20mm", "25mm", "30mm"],
+      answer: 2,
+      explanation: "「25mmまで」対応すると説明されている。"
+    },
+    {
+      q: "紹介されていたクリッパーは、どんなタイプだった？",
+      choices: ["使い捨てタイプ", "替刃が交換できるタイプ", "音が全く出ないタイプ", "電源不要の手動式タイプ"],
+      answer: 1,
+      explanation: "「替刃が交換できるタイプの」クリッパーと紹介されている。"
+    },
+    {
+      q: "このクリッパーを使うことで、何が高いと説明されていた？",
+      choices: ["価格", "顧客満足度", "重量", "音量"],
+      answer: 1,
+      explanation: "「顧客満足度も高い」と説明されている。"
+    },
+    {
+      q: "紹介されていたくし（コーム）の特徴は？",
+      choices: ["ピンが細い", "ピンが太い", "プラスチック製", "折りたたみ式"],
+      answer: 1,
+      explanation: "「ピンが太いのを使ってます」と説明されている。"
+    },
+    {
+      q: "動画中で、シザーに関連して話題に挙がっていた言葉は？",
+      choices: ["保証書", "大会", "送料", "レンタル"],
+      answer: 1,
+      explanation: "シザーを手に取りながら「大会って」という話題が出ている。"
+    },
+    {
+      q: "この動画で紹介されていたのは、主にどんな種類の道具？",
+      choices: ["シャンプー・リンス", "トリミング用品（クリッパー・くし・シザーなど）", "おやつ・フード", "首輪・リード"],
+      answer: 1,
+      explanation: "トリミングで使う道具（クリッパー・くし・シザーなど）が紹介されている。"
+    }
+  ]
+});
+</script>
+
+</body>
+</html>
