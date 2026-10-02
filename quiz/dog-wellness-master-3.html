@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>研修クイズ｜Dog Wellness Master第三弾</title>
+<link rel="stylesheet" href="quiz-style.css">
+</head>
+<body>
+
+<div id="app"></div>
+
+<script src="quiz-engine.js"></script>
+<script>
+initQuiz({
+  quiz_id: "dog-wellness-master-3",
+  hub_url: "index.html",
+  video_title: "Dog Wellness Master(福山先生)第三弾",
+  category: "特別セミナー",
+  source_url: "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/2c097b51-4b7b-4131-a1c7-cb6ac11749b2",
+  thumbnail: "images/dog-wellness-master-3.jpg",
+  questions: [
+    {
+      q: "この講義のテーマとなっている「形態ストレス」とは何と何を指すか？",
+      choices: ["肥満化と痩身化", "長毛化と多毛化", "大型化と小型化", "早熟化と晩熟化"],
+      answer: 1,
+      explanation: "「形態ストレス（長毛化+多毛化）」がテーマとして説明されている。"
+    },
+    {
+      q: "犬が人からのケアなしに健康を保つことが困難な理由として、挙げられていなかったものは？",
+      choices: ["衛生面の確保", "聴覚・視覚の確保", "関節可動域の確保", "消化機能の確保"],
+      answer: 3,
+      explanation: "スライドでは「衛生面・聴覚視覚・関節可動域・血流」の確保が挙げられており、消化機能は含まれていない。"
+    },
+    {
+      q: "放置された毛玉は、何を阻害すると説明されていた？",
+      choices: ["消化と血流", "関節の可動域と血流", "視覚と聴覚", "体温調節と呼吸"],
+      answer: 1,
+      explanation: "「放置された毛玉は、関節の可動域や血流を阻害する」と説明されている。"
+    },
+    {
+      q: "ドライヤーの時間について、どう説明されていた？",
+      choices: ["犬にとってリラックスできる時間", "犬にとって大きなストレスになる", "犬にとって影響がない時間", "犬が最も喜ぶ時間"],
+      answer: 1,
+      explanation: "「ドライヤーの時間は、犬にとって大きなストレスになる」と強調されている。"
+    },
+    {
+      q: "スライドの図で「グルーミング（グルーマー）」が結びつけられていたのは？",
+      choices: ["ヘルスケア", "Beautyケア", "ウェルネスケア", "ビジネスケア"],
+      answer: 0,
+      explanation: "グルーミング（グルーマー）はヘルスケア側に、トリミング（トリマー）はBeautyケア側に配置されている。"
+    },
+    {
+      q: "スライドの図で「トリミング（トリマー）」が結びつけられていたのは？",
+      choices: ["ヘルスケア", "Beautyケア", "ウェルネスケア", "メディカルケア"],
+      answer: 1,
+      explanation: "トリミング（トリマー）はBeautyケア（人の趣味趣向）側に配置されている。"
+    },
+    {
+      q: "「ヘルスケア（イヌのストレス軽減）」の具体例として挙げられていなかったものは？",
+      choices: ["健康維持作業", "生活の質の向上", "保健衛生の向上", "毛の加工"],
+      answer: 3,
+      explanation: "「毛の加工」はBeautyケア側の具体例。ヘルスケア側は「健康維持作業・生活の質の向上・保健衛生の向上」。"
+    },
+    {
+      q: "グルーミングとトリミングのバランスの中心にあるとされていた概念は？",
+      choices: ["コストケア", "ウェルネスケア", "タイムケア", "トレンドケア"],
+      answer: 1,
+      explanation: "天秤の中心に「ウェルネスケア」が置かれ、「バランスと節度」が重要と説明されている。"
+    },
+    {
+      q: "まとめで、適切なケアによってもたらされると説明されていたのは？",
+      choices: ["犬の毛量の増加", "犬のストレス軽減と健康寿命の延伸", "犬の体重の減少", "犬の性格の変化"],
+      answer: 1,
+      explanation: "「皆様の施す適切なケアは、この犬たちのストレスを減らし健康寿命を伸ばす」とまとめられている。"
+    },
+    {
+      q: "「Beautyケア」の具体例として挙げられていたものは？",
+      choices: [
+        "健康維持作業・生活の質の向上・保健衛生の向上",
+        "仕上げ作業・毛の加工・装飾的被毛愛好家",
+        "衛生管理・血流促進・関節ケア",
+        "栄養管理・ストレスケア・運動療法"
+      ],
+      answer: 1,
+      explanation: "Beautyケア（人の趣味趣向）側の具体例として「仕上げ作業・毛の加工・装飾的被毛愛好家」が挙げられている。"
+    }
+  ]
+});
+</script>
+
+</body>
+</html>
