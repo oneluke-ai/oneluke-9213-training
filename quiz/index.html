@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>研修クイズ一覧</title>
+<link rel="stylesheet" href="quiz-style.css">
+</head>
+<body>
+
+<div id="statusBarMount"></div>
+
+<div class="brand-row">
+  <div class="paw-mark">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="肉球マスコット">
+      <circle cx="50" cy="50" r="50" fill="var(--brand-tiffany)"/>
+      <g fill="#ffffff">
+        <ellipse cx="50" cy="61" rx="20.5" ry="16.5"/>
+        <circle cx="32" cy="40" r="8.2"/>
+        <circle cx="50" cy="34" r="8.8"/>
+        <circle cx="68" cy="40" r="8.2"/>
+      </g>
+    </svg>
+  </div>
+  <h1>研修クイズ</h1>
+</div>
+
+<div class="trail-intro">
+  <div class="mascot-big">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="肉球マスコット">
+      <circle cx="50" cy="50" r="50" fill="var(--brand-tiffany)"/>
+      <g fill="#ffffff">
+        <ellipse cx="50" cy="61" rx="20.5" ry="16.5"/>
+        <circle cx="32" cy="40" r="8.2"/>
+        <circle cx="50" cy="34" r="8.8"/>
+        <circle cx="68" cy="40" r="8.2"/>
+      </g>
+    </svg>
+  </div>
+  <p><strong>このページをブックマーク！</strong><br>新しいクイズが増えたらここに追加されます。何度でも再挑戦できます。</p>
+</div>
+
+<div id="weekCalMount"></div>
+
+<ul class="trail" id="trail"></ul>
+
+<div class="trail-tail" aria-hidden="true">
+  <svg class="tail-paw" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="61" rx="20.5" ry="16.5"/>
+    <circle cx="32" cy="40" r="8.2"/><circle cx="50" cy="34" r="8.8"/><circle cx="68" cy="40" r="8.2"/>
+  </svg>
+  <svg class="tail-paw" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="61" rx="20.5" ry="16.5"/>
+    <circle cx="32" cy="40" r="8.2"/><circle cx="50" cy="34" r="8.8"/><circle cx="68" cy="40" r="8.2"/>
+  </svg>
+  <svg class="tail-paw" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="61" rx="20.5" ry="16.5"/>
+    <circle cx="32" cy="40" r="8.2"/><circle cx="50" cy="34" r="8.8"/><circle cx="68" cy="40" r="8.2"/>
+  </svg>
+  <p>まだまだ増えていきます</p>
+</div>
+
+<script src="quiz-engine.js"></script>
+<script>
+renderStatusBar(document.getElementById('statusBarMount'));
+renderWeekCalendar(document.getElementById('weekCalMount'));
+
+// ============================================================
+// クイズが増えたら、ここに1行足すだけでOK（新しいHTMLファイルとセットで追加）
+// category は "犬の扱い方" / "カット" / "グルーマー" / "特別セミナー" のいずれか
+// ============================================================
+const QUIZZES = [
+  { title: "抱っこの仕方", category: "犬の扱い方", file: "dakko-no-shikata.html", count: 8 },
+  { title: "足の上げ方", category: "犬の扱い方", file: "ashi-no-agekata.html", count: 8 },
+  { title: "ドライ&ブロー", category: "犬の扱い方", file: "dry-blow.html", count: 8 },
+  { title: "道具の説明①", category: "グルーマー", file: "dougu-1.html", count: 6 },
+  { title: "お尻カットガイド", category: "カット", file: "oshiri-cut.html", count: 5 },
+  { title: "プードルマズルカット", category: "カット", file: "muzzle-cut.html", count: 6 },
+  { title: "Dog Wellness Master 第三弾", category: "特別セミナー", file: "dog-wellness-master-3.html", count: 10 },
+  { title: "やさしさGrooming第一弾① Part1", category: "特別セミナー", file: "yasashisa-grooming-1-1-part1.html", count: 7 },
+  { title: "やさしさGrooming第一弾① Part2", category: "特別セミナー", file: "yasashisa-grooming-1-1-part2.html", count: 6 },
+  { title: "やさしさGrooming第一弾① Part3", category: "特別セミナー", file: "yasashisa-grooming-1-1-part3.html", count: 4 },
+  { title: "やさしさGrooming第一弾② Part1", category: "特別セミナー", file: "yasashisa-grooming-1-2-part1.html", count: 6 },
+  { title: "やさしさGrooming第一弾② Part2", category: "特別セミナー", file: "yasashisa-grooming-1-2-part2.html", count: 6 },
+  { title: "やさしさGrooming第一弾② Part3", category: "特別セミナー", file: "yasashisa-grooming-1-2-part3.html", count: 5 },
+  { title: "やさしさGrooming第一弾③ Part1", category: "特別セミナー", file: "yasashisa-grooming-1-3-part1.html", count: 6 },
+  { title: "やさしさGrooming第一弾③ Part2", category: "特別セミナー", file: "yasashisa-grooming-1-3-part2.html", count: 5 },
+  { title: "Dog Stress Master 第二弾 Part1", category: "特別セミナー", file: "dog-stress-master-2-part1.html", count: 8 },
+  { title: "Dog Stress Master 第二弾 Part2", category: "特別セミナー", file: "dog-stress-master-2-part2.html", count: 8 },
+  { title: "Dog Stress Master 第二弾 Part3", category: "特別セミナー", file: "dog-stress-master-2-part3.html", count: 7 },
+  { title: "Dog History 第一弾 Part1", category: "特別セミナー", file: "dog-history-1-part1.html", count: 6 },
+  { title: "Dog History 第一弾 Part2", category: "特別セミナー", file: "dog-history-1-part2.html", count: 7 },
+  { title: "Dog History 第一弾 Part3", category: "特別セミナー", file: "dog-history-1-part3.html", count: 7 },
+  { title: "アシメカット総合", category: "カット", file: "asime-cut-sougou.html", count: 5 },
+  { title: "ピンブラシの使い方", category: "グルーマー", file: "pin-brush.html", count: 8 },
+  { title: "スリッカーの動かし方", category: "グルーマー", file: "slicker-brush.html", count: 8 },
+  { title: "前肢爪切り", category: "犬の扱い方", file: "zenshi-tsumekiri.html", count: 12 },
+  { title: "後肢爪切り", category: "犬の扱い方", file: "koshi-tsumekiri.html", count: 8 },
+  { title: "道具の説明②", category: "グルーマー", file: "dougu-2.html", count: 12 },
+  { title: "爪やすり", category: "犬の扱い方", file: "tsume-yasuri.html", count: 12 },
+];
+
+const CATEGORY_CLASS = {
+  "犬の扱い方": "cat-inu",
+  "カット": "cat-cut",
+  "グルーマー": "cat-groomer",
+  "特別セミナー": "cat-seminar",
+};
+
+// マイ進捗ページ（リッチメニューの「マイ進捗」から「?go=progress」で開かれた時の行き先）
+const PROGRESS_PAGE = "progress.html";
+
+const trailEl = document.getElementById('trail');
+
+// 管理ダッシュボードからの手動解放を反映してから一覧を描画する。
+// syncManualUnlocks()はAirtableへの読み取り専用の問い合わせ（氏名未登録なら何もしない）。
+// 失敗しても静かに諦め、通常のロック判定だけで表示を続ける（quiz-engine.js側でハンドリング済み）。
+(async function renderTrail() {
+  await syncManualUnlocks();
+
+  // LINE ID連携はこのページ（LIFFのエンドポイント）でしか動かせない（クイズ本体のページでは400エラーになる）。
+  // 「続きから」「マイ進捗」で別ページへ移動する前にも済ませる（待つのは最大2秒）。
+  await linkLineIdForHub(2000);
+
+  // カテゴリごとに「直前の1本をクリアするまで次は挑戦不可」にする（カテゴリをまたいだ順番待ちはしない）。
+  // 判定はquiz-engine.jsのcomputeQuizStatesに集約している（マイ進捗ページと共通）。
+  const states = computeQuizStates(QUIZZES);
+
+  // LINEリッチメニューの「続きから」「マイ進捗」用。一覧を描画する前に該当ページへ移動する。
+  const go = getGoParam();
+  if (go === 'progress') { location.replace(PROGRESS_PAGE); return; }
+  if (go === 'next') {
+    const next = pickNextQuiz(states);
+    if (next) { location.replace(next.quiz.file); return; }
+    // 全部クリア済みなら移動せず、一覧の上にひとこと出す
+    trailEl.insertAdjacentHTML('beforebegin',
+      '<p style="text-align:center; font-weight:600; color:var(--tiffany-deep); margin:0 0 16px;">すべてのクイズをクリアしました！おつかれさまです🎉</p>');
+  }
+
+  QUIZZES.forEach((quiz, i) => {
+    const li = document.createElement('li');
+    li.className = 'trail-node ' + (i % 2 === 0 ? 'align-left' : 'align-right');
+
+    const a = document.createElement('a');
+    a.className = 'node-card';
+
+    const badge = document.createElement('div');
+    badge.className = 'node-badge ' + (CATEGORY_CLASS[quiz.category] || 'cat-inu');
+    badge.textContent = quiz.title.charAt(0);
+
+    const body = document.createElement('div');
+    body.className = 'node-body';
+
+    // この端末で一度でもクリア済みなら、淡くグレーアウト＋Clearスタンプ（再挑戦は引き続き可能）
+    // 判定はファイル名（拡張子なし）＝クイズ側のquiz_idで行う（computeQuizStates内。必ず一致させること）。
+    const st = states[i];
+    const { cleared, wouldBeLockedBySequence, manuallyUnlocked, locked } = st;
+
+    if (locked) {
+      a.classList.add('locked');
+      a.removeAttribute('href');
+      body.innerHTML = `
+        <div class="node-cat">${escapeHtml(quiz.category)}</div>
+        <div class="node-title">${escapeHtml(quiz.title)}</div>
+        <div class="lock-hint">前のクイズをクリアすると挑戦できます</div>
+      `;
+      const lockBadge = document.createElement('div');
+      lockBadge.className = 'lock-badge';
+      lockBadge.textContent = '🔒';
+      a.appendChild(lockBadge);
+    } else {
+      a.href = quiz.file;
+      // 本来は順番待ちだが、管理者が特別に解放してくれた場合はその旨を伝える
+      const metaLine = (wouldBeLockedBySequence && manuallyUnlocked)
+        ? `<div class="node-meta">🔓特別に解放されました・全${quiz.count}問</div>`
+        : `<div class="node-meta">全${quiz.count}問・約${Math.max(3, Math.round(quiz.count * 0.8))}分</div>`;
+      body.innerHTML = `
+        <div class="node-cat">${escapeHtml(quiz.category)}</div>
+        <div class="node-title">${escapeHtml(quiz.title)}</div>
+        ${metaLine}
+      `;
+    }
+
+    if (cleared) {
+      a.classList.add('cleared');
+      const stamp = document.createElement('div');
+      stamp.className = 'clear-stamp';
+      stamp.textContent = 'Clear!';
+      a.appendChild(stamp);
+    }
+
+    // 満点（パーフェクト）は合格とは別枠の称号。星バッジだけ付ける（進行の解放条件ではない）
+    // クリアスタンプと同じくlocked判定は見ない（実際の運用では、パーフェクトを取れた時点で
+    // そのクイズは既に解放済みのはずなので、lockedとperfectが同時にtrueになることはない）
+    if (st.perfect) {
+      const perfectBadge = document.createElement('div');
+      perfectBadge.className = 'perfect-badge';
+      perfectBadge.textContent = '⭐';
+      a.appendChild(perfectBadge);
+    }
+
+    a.appendChild(badge);
+    a.appendChild(body);
+    li.appendChild(a);
+    trailEl.appendChild(li);
+  });
+})();
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : str;
+  return div.innerHTML;
+}
+
+// isCleared()はquiz-engine.js側で定義済み（登録済みの氏名ごとに判定する）ものをそのまま使う
+</script>
+
+</body>
+</html>
