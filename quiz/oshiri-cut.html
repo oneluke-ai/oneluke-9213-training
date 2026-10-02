@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>研修クイズ｜お尻カットガイド</title>
+<link rel="stylesheet" href="quiz-style.css">
+</head>
+<body>
+
+<div id="app"></div>
+
+<script src="quiz-engine.js"></script>
+<script>
+initQuiz({
+  quiz_id: "oshiri-cut",
+  hub_url: "index.html",
+  video_title: "お尻カットガイド",
+  category: "カット",
+  source_url: "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/739d5a73-e65c-4680-9269-49ed32b69fbc",
+  thumbnail: "images/oshiri-cut.jpg",
+  questions: [
+    {
+      q: "カットを始める前に、まず何をすると説明されていた？",
+      choices: ["シザーを研ぐ", "理想の形をイメージする", "犬をシャンプーする", "毛を全部剃る"],
+      answer: 1,
+      explanation: "「カット前に理想の形をイメージします」と説明されている。"
+    },
+    {
+      q: "お尻カットで最初に設定すると説明されていたのは？",
+      choices: ["お尻の頂点", "尻尾の付け根", "足の付け根", "背中のライン"],
+      answer: 0,
+      explanation: "「まずお尻の頂点を設定します」と説明されている。"
+    },
+    {
+      q: "お尻と何の繋がりの部分につくると説明されていた？",
+      choices: ["背骨", "飛節", "尻尾", "肩甲骨"],
+      answer: 1,
+      explanation: "「お尻と飛節の繋がりの部分につくります」と説明されている。"
+    },
+    {
+      q: "丸みを作るカットで重要と説明されていた道具は？",
+      choices: ["ストレートシザー", "カーブシザー", "クリッパー", "コーム"],
+      answer: 1,
+      explanation: "「カーブシザーはメーカーによって様々ですが、丸みを作るカットでは重要です」と説明されている。"
+    },
+    {
+      q: "最後に、どんなグルーミングを心がけましょうと言っていた？",
+      choices: ["できるだけ早いグルーミング", "被毛に優しいグルーミング", "力強いグルーミング", "音を立てないグルーミング"],
+      answer: 1,
+      explanation: "「カット方法やシザーリングを意識して、被毛に優しいグルーミングをしましょう」と説明されている。"
+    }
+  ]
+});
+</script>
+
+</body>
+</html>
