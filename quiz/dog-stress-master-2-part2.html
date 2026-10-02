@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dog Stress Master 第二弾 Part2 クイズ</title>
+<link rel="stylesheet" href="quiz-style.css">
+</head>
+<body>
+<div id="app"></div>
+<script src="quiz-engine.js"></script>
+<script>
+initQuiz({
+  quiz_id: "dog-stress-master-2-part2",
+  hub_url: "index.html",
+  video_title: "Dog Stress Master(福山先生)第二弾 Part2（9:20〜16:40）",
+  category: "特別セミナー",
+  source_url: "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/adb2c9da-3594-484a-a945-2b9f294d64b7",
+  thumbnail: "images/dog-stress-master-2.jpg",
+  questions: [
+    {
+      q: "骨肉腫のリスクが紹介されていた犬種は？",
+      choices: ["バーニーズ・マウンテン・ドッグ", "ゴールデンレトリバー", "柴犬", "チワワ"],
+      answer: 0,
+      explanation: "スライドのヘッダーが「バーニーズ・マウンテン・ドッグと骨肉腫」となり、この犬種の骨肉腫リスクが紹介されていた。"
+    },
+    {
+      q: "トリミング時、大型犬に対して室温・湯温度はどうすべきと説明されていた？",
+      choices: ["低めにする", "高めにする", "特に調整不要", "犬種によらず一定にする"],
+      answer: 0,
+      explanation: "「室温・湯温度は低め！」と説明されていた（大きい犬ほど暑さに弱いため）。"
+    },
+    {
+      q: "スライドで、熱生産量は体重の何乗に比例すると説明されていた？",
+      choices: ["1/2乗", "2/3乗", "3/4乗", "1乗"],
+      answer: 1,
+      explanation: "「大きくなるほど暑さに弱い（熱生産量＝体重の2/3乗に比例）」と説明されていた。"
+    },
+    {
+      q: "ポメラニアンは何kgから何kgへ小型化されたと紹介されていた？",
+      choices: ["10kg→3kg", "13.6kg→2.5kg", "8kg→2kg", "15kg→4kg"],
+      answer: 1,
+      explanation: "「ポメラニアン：13.6kgから2.5kgへ小型化された」と紹介されていた。"
+    },
+    {
+      q: "ポメラニアンの小型化に関与した人物として紹介されていたのは？",
+      choices: ["Queen Victoria", "Queen Elizabeth", "Napoleon", "Marie Antoinette"],
+      answer: 0,
+      explanation: "Queen Victoriaの写真とともに「より小さく」改良されたことが紹介されていた。"
+    },
+    {
+      q: "変形性関節症＆変形性脊椎症は、イヌ全体の何%に見られると紹介されていた？",
+      choices: ["10%", "20%", "30%", "40%"],
+      answer: 1,
+      explanation: "「変形性関節症＆変形性脊椎症（イヌの20%、10歳以上の44.3%）」と紹介されていた。"
+    },
+    {
+      q: "同じ疾患は、10歳以上のイヌでは何%に見られると紹介されていた？",
+      choices: ["25.3%", "34.3%", "44.3%", "54.3%"],
+      answer: 2,
+      explanation: "「10歳以上の44.3%」と紹介されていた。"
+    },
+    {
+      q: "「形態ストレス（ネコ）」で、来院した12歳以上のネコの何%に変形性関節症が見られると紹介されていた？",
+      choices: ["70%", "80%", "90%", "95%"],
+      answer: 2,
+      explanation: "「変形性関節症（来院した12歳以上のネコの90%）Penderson (2000)」と紹介されていた。"
+    }
+  ]
+});
+</script>
+</body>
+</html>
