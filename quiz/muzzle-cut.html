@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>研修クイズ｜プードルマズルカット</title>
+<link rel="stylesheet" href="quiz-style.css">
+</head>
+<body>
+
+<div id="app"></div>
+
+<script src="quiz-engine.js"></script>
+<script>
+initQuiz({
+  quiz_id: "muzzle-cut",
+  hub_url: "index.html",
+  video_title: "プードルマズルカット サンプル",
+  category: "カット",
+  source_url: "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/59570d5f-8501-4ecd-be45-393925fe77a3",
+  thumbnail: "images/muzzle-cut.jpg",
+  questions: [
+    {
+      q: "マズル上部と目頭周辺をカットする目的は？",
+      choices: ["毛量を減らすため", "正面から目がはっきり見えるようにするため", "毛玉を防ぐため", "左右対称にするため"],
+      answer: 1,
+      explanation: "「マズル上部、目頭周辺をカットし、正面からみて目がはっきり見える様にします」と説明されている。"
+    },
+    {
+      q: "まつ毛を残さない場合、アイラインは何mmほどミニクリッパーでカットすると説明されていた？",
+      choices: ["0.5mm", "1mm", "2mm", "3mm"],
+      answer: 0,
+      explanation: "「まつ毛残しの場合を除きアイライン0.5mmほどミニクリッパーでカットします」と説明されている。"
+    },
+    {
+      q: "マズルの幅の目安は、目尻からどのくらいと説明されていた？",
+      choices: ["目尻より-1mm", "目尻ちょうど", "目尻より+1mm", "目尻より+3mm"],
+      answer: 2,
+      explanation: "「マズルの幅は目尻〜+1mmほどが目安です」と説明されている。"
+    },
+    {
+      q: "切り残しが多いので特に注意すると説明されていた部位は？",
+      choices: ["耳の付け根", "口角周辺とマズル上部の奥行き", "鼻先", "眉間"],
+      answer: 1,
+      explanation: "「特に口角周辺、マズル上部の奥行きが切り残しが多いので注意します」と説明されている。"
+    },
+    {
+      q: "顎の毛を触る際、どうすると良いと説明されていた？",
+      choices: ["素早く触る", "優しく掴む", "触らないようにする", "両手で固定する"],
+      answer: 1,
+      explanation: "「急な動きや不測の事態に対応するために、顎の毛を触る場合は優しく掴みましょう」と説明されている。"
+    },
+    {
+      q: "この動画の終盤で強調されていたのは？",
+      choices: ["スピードを上げること", "最後にもう一度全体を注意して見直すこと", "道具を変えること", "犬を休ませること"],
+      answer: 1,
+      explanation: "「最後にもう一度注意です」と、仕上げ前の最終チェックが強調されている。"
+    }
+  ]
+});
+</script>
+
+</body>
+</html>
