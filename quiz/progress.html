@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>マイ進捗｜研修クイズ</title>
+<link rel="stylesheet" href="quiz-style.css">
+<style>
+  .pg-who { color: var(--ink-soft); font-size: 14px; margin: 2px 0 6px; }
+  .pg-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0 12px; }
+  .pg-stat { background: var(--tiffany-tint); border-radius: 16px; padding: 12px 14px; }
+  .pg-stat .label { font-size: 12px; color: var(--ink-soft); }
+  .pg-stat .value { font-family: "Fredoka", sans-serif; font-size: 26px; font-weight: 600; color: var(--ink); line-height: 1.25; }
+  .pg-stat .value small { font-size: 13px; font-weight: 500; color: var(--ink-soft); margin-left: 2px; }
+  .pg-bar { height: 10px; border-radius: 99px; background: var(--card-line); overflow: hidden; }
+  .pg-bar > i { display: block; height: 100%; border-radius: 99px; background: var(--tiffany); }
+  .pg-total { margin: 4px 0 6px; }
+  .pg-total .head { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; margin-bottom: 6px; }
+  .pg-cat { margin-top: 24px; }
+  .pg-cat-head { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; margin-bottom: 6px; }
+  .pg-cat-head span { font-size: 13px; font-weight: 600; color: var(--ink-soft); }
+  .pg-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--card-line); font-size: 14.5px; }
+  .pg-chip { flex: none; font-size: 12px; font-weight: 700; border-radius: 99px; padding: 2px 10px; }
+  .pg-chip.perfect { background: var(--orange-tint); color: var(--orange-deep); }
+  .pg-chip.cleared { background: var(--green-tint); color: var(--green-deep); }
+  .pg-chip.open { background: var(--tiffany-tint); color: var(--tiffany-deep); }
+  .pg-chip.locked { background: var(--card-line); color: var(--muted); }
+  .pg-actions { display: flex; flex-direction: column; gap: 12px; margin-top: 28px; }
+  .pg-actions a { display: block; text-align: center; text-decoration: none; }
+  .pg-actions .btn-secondary-link { color: var(--tiffany-deep); font-weight: 700; padding: 10px; }
+  .pg-empty { background: var(--tiffany-tint); border-radius: 16px; padding: 16px; margin: 14px 0; text-align: center; }
+</style>
+</head>
+<body>
+
+<div id="statusBarMount"></div>
+
+<a class="hub-link" href="index.html">← クイズ一覧へ戻る</a>
+
+<div class="brand-row">
+  <div class="paw-mark" id="brandPaw"></div>
+  <h1>マイ進捗</h1>
+</div>
+<div class="pg-who" id="who"></div>
+
+<div id="weekCalMount"></div>
+<div id="summary"></div>
+<div id="cats"></div>
+<div class="pg-actions" id="actions"></div>
+
+<script src="quiz-engine.js"></script>
+<script>
+// クイズ一覧のQUIZZESと同じ内容（このファイルを生成した時点のコピー。クイズを追加した時は一覧と一緒に更新する）
+const QUIZZES = [
+  { title: "抱っこの仕方", category: "犬の扱い方", file: "dakko-no-shikata.html", count: 8 },
+  { title: "足の上げ方", category: "犬の扱い方", file: "ashi-no-agekata.html", count: 8 },
+  { title: "ドライ&ブロー", category: "犬の扱い方", file: "dry-blow.html", count: 8 },
+  { title: "道具の説明①", category: "グルーマー", file: "dougu-1.html", count: 6 },
+  { title: "お尻カットガイド", category: "カット", file: "oshiri-cut.html", count: 5 },
+  { title: "プードルマズルカット", category: "カット", file: "muzzle-cut.html", count: 6 },
+  { title: "Dog Wellness Master 第三弾", category: "特別セミナー", file: "dog-wellness-master-3.html", count: 10 },
+  { title: "やさしさGrooming第一弾① Part1", category: "特別セミナー", file: "yasashisa-grooming-1-1-part1.html", count: 7 },
+  { title: "やさしさGrooming第一弾① Part2", category: "特別セミナー", file: "yasashisa-grooming-1-1-part2.html", count: 6 },
+  { title: "やさしさGrooming第一弾① Part3", category: "特別セミナー", file: "yasashisa-grooming-1-1-part3.html", count: 4 },
+  { title: "やさしさGrooming第一弾② Part1", category: "特別セミナー", file: "yasashisa-grooming-1-2-part1.html", count: 6 },
+  { title: "やさしさGrooming第一弾② Part2", category: "特別セミナー", file: "yasashisa-grooming-1-2-part2.html", count: 6 },
+  { title: "やさしさGrooming第一弾② Part3", category: "特別セミナー", file: "yasashisa-grooming-1-2-part3.html", count: 5 },
+  { title: "やさしさGrooming第一弾③ Part1", category: "特別セミナー", file: "yasashisa-grooming-1-3-part1.html", count: 6 },
+  { title: "やさしさGrooming第一弾③ Part2", category: "特別セミナー", file: "yasashisa-grooming-1-3-part2.html", count: 5 },
+  { title: "Dog Stress Master 第二弾 Part1", category: "特別セミナー", file: "dog-stress-master-2-part1.html", count: 8 },
+  { title: "Dog Stress Master 第二弾 Part2", category: "特別セミナー", file: "dog-stress-master-2-part2.html", count: 8 },
+  { title: "Dog Stress Master 第二弾 Part3", category: "特別セミナー", file: "dog-stress-master-2-part3.html", count: 7 },
+  { title: "Dog History 第一弾 Part1", category: "特別セミナー", file: "dog-history-1-part1.html", count: 6 },
+  { title: "Dog History 第一弾 Part2", category: "特別セミナー", file: "dog-history-1-part2.html", count: 7 },
+  { title: "Dog History 第一弾 Part3", category: "特別セミナー", file: "dog-history-1-part3.html", count: 7 },
+  { title: "アシメカット総合", category: "カット", file: "asime-cut-sougou.html", count: 5 },
+  { title: "ピンブラシの使い方", category: "グルーマー", file: "pin-brush.html", count: 8 },
+  { title: "スリッカーの動かし方", category: "グルーマー", file: "slicker-brush.html", count: 8 },
+  { title: "前肢爪切り", category: "犬の扱い方", file: "zenshi-tsumekiri.html", count: 12 },
+  { title: "後肢爪切り", category: "犬の扱い方", file: "koshi-tsumekiri.html", count: 8 },
+  { title: "道具の説明②", category: "グルーマー", file: "dougu-2.html", count: 12 },
+  { title: "爪やすり", category: "犬の扱い方", file: "tsume-yasuri.html", count: 12 },
+];
+
+const HUB_PAGE = "index.html";
+
+// 表示用に、全体の集計とカテゴリごとの内訳にまとめる（純粋関数）
+function buildProgress(states) {
+  const cats = [];
+  states.forEach(s => {
+    let c = cats.find(x => x.category === s.quiz.category);
+    if (!c) { c = { category: s.quiz.category, items: [] }; cats.push(c); }
+    c.items.push(s);
+  });
+  cats.forEach(c => { c.cleared = c.items.filter(i => i.cleared).length; });
+  return {
+    total: states.length,
+    cleared: states.filter(s => s.cleared).length,
+    perfect: states.filter(s => s.perfect).length,
+    cats,
+  };
+}
+
+function quizChip(s) {
+  if (s.perfect) return { cls: 'perfect', label: 'パーフェクト ⭐' };
+  if (s.cleared) return { cls: 'cleared', label: 'クリア済み' };
+  if (s.locked) return { cls: 'locked', label: '🔒 まだ' };
+  return { cls: 'open', label: '挑戦できます' };
+}
+
+function pct(n, d) { return d ? Math.round((n / d) * 100) : 0; }
+
+function renderProgressPage(states, profile) {
+  const who = document.getElementById('who');
+  const summary = document.getElementById('summary');
+  const cats = document.getElementById('cats');
+  const actions = document.getElementById('actions');
+
+  if (!profile.name) {
+    who.textContent = '';
+    summary.innerHTML = `<div class="pg-empty">まだ登録されていません。<br>クイズ一覧から、最初のクイズを始めましょう。</div>`;
+    cats.innerHTML = '';
+    actions.innerHTML = `<a class="btn-primary" href="${escapeHtml(HUB_PAGE)}">クイズ一覧を開く</a>`;
+    return;
+  }
+
+  const p = buildProgress(states);
+  who.textContent = profile.name + 'さん' + (profile.store ? '｜' + profile.store : '');
+
+  summary.innerHTML = `
+    <div class="pg-stats">
+      <div class="pg-stat"><div class="label">連続記録</div><div class="value">🔥${getDisplayStreak()}<small>日</small></div></div>
+      <div class="pg-stat"><div class="label">ポイント</div><div class="value">⭐${getXP()}<small>pt</small></div></div>
+      <div class="pg-stat"><div class="label">クリアしたクイズ</div><div class="value">${p.cleared}<small>/ ${p.total}本</small></div></div>
+      <div class="pg-stat"><div class="label">パーフェクト</div><div class="value">${p.perfect}<small>本</small></div></div>
+    </div>
+    <div class="pg-total">
+      <div class="head"><div>全体の進み具合</div><div>${pct(p.cleared, p.total)}%</div></div>
+      <div class="pg-bar"><i style="width:${pct(p.cleared, p.total)}%"></i></div>
+    </div>
+  `;
+
+  cats.innerHTML = p.cats.map(c => `
+    <div class="pg-cat">
+      <div class="pg-cat-head">${escapeHtml(c.category)}<span>${c.cleared} / ${c.items.length}本 クリア</span></div>
+      <div class="pg-bar"><i style="width:${pct(c.cleared, c.items.length)}%"></i></div>
+      ${c.items.map(s => {
+        const chip = quizChip(s);
+        return `<div class="pg-item"><div>${escapeHtml(s.quiz.title)}</div><div class="pg-chip ${chip.cls}">${chip.label}</div></div>`;
+      }).join('')}
+    </div>
+  `).join('');
+
+  const next = pickNextQuiz(states);
+  actions.innerHTML =
+    (next ? `<a class="btn-primary" href="${escapeHtml(next.quiz.file)}">続きから始める（${escapeHtml(next.quiz.title)}）</a>` : '')
+    + `<a class="btn-secondary-link" href="${escapeHtml(HUB_PAGE)}">クイズ一覧を開く</a>`;
+}
+
+(async function initProgress() {
+  renderStatusBar(document.getElementById('statusBarMount'));
+  renderWeekCalendar(document.getElementById('weekCalMount'));
+  document.getElementById('brandPaw').innerHTML = PAW_SVG;
+  // 管理者が手動解放したクイズも「挑戦できます」と表示されるよう、一覧と同じく先に反映する
+  await syncManualUnlocks();
+  renderProgressPage(computeQuizStates(QUIZZES), getProfile());
+})();
+</script>
+
+</body>
+</html>
