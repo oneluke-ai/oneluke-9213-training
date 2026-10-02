@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dog History 第一弾 Part1 クイズ</title>
+<link rel="stylesheet" href="quiz-style.css">
+</head>
+<body>
+<div id="app"></div>
+<script src="quiz-engine.js"></script>
+<script>
+initQuiz({
+  quiz_id: "dog-history-1-part1",
+  hub_url: "index.html",
+  video_title: "Dog History(福山先生)第一弾 Part1（0:00〜9:10）",
+  category: "特別セミナー",
+  source_url: "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/c26efb3c-8218-4619-af17-825ee124a09b",
+  thumbnail: "images/dog-history-1.jpg",
+  questions: [
+    {
+      q: "福山先生のプロフィールで紹介されていなかった肩書きはどれ？",
+      choices: [
+        "ヤマザキ動物看護大学 准教授",
+        "SFSPCA Hearing Dog Trainer",
+        "Pet Grooming Specialist",
+        "獣医師免許保有"
+      ],
+      answer: 3,
+      explanation: "紹介されていたのは「ヤマザキ動物看護大学 准教授」「愛玩動物看護師」「SFSPCA Hearing Dog Trainer」「Pet Grooming Specialist」「自宅でサロン経営」「『坂上どうぶつ王国』コメンテーター」。獣医師免許の話は出ていない。"
+    },
+    {
+      q: "犬には全部で何品種あると紹介されていた？",
+      choices: ["500品種", "800品種", "1000品種", "1500品種"],
+      answer: 2,
+      explanation: "「1000品種（犬種）」「多種多様な姿・形・大きさが一つの種の中に存在している」と紹介されていた。"
+    },
+    {
+      q: "犬の本来の姿として紹介されていた野生種は？",
+      choices: ["オオカミ", "ディンゴ", "コヨーテ", "ジャッカル"],
+      answer: 1,
+      explanation: "「犬の本来の姿：ディンゴの形」というスライドで紹介されていた。"
+    },
+    {
+      q: "「生物：イヌ」の基本データとして紹介されていた体重は？",
+      choices: ["12kg程度", "14kg程度", "16kg程度", "20kg程度"],
+      answer: 2,
+      explanation: "「体重16kg程度」と紹介されていた。"
+    },
+    {
+      q: "同じスライドで紹介されていた耳の形状は？",
+      choices: ["立耳", "垂れ耳", "半立ち耳", "巻き耳"],
+      answer: 0,
+      explanation: "「立耳」と紹介されていた。"
+    },
+    {
+      q: "同じスライドで紹介されていた換毛の特徴は？",
+      choices: [
+        "季節性の明確な換毛期がある",
+        "一年中同じペースで抜け続ける",
+        "換毛期は無い",
+        "2年に1回だけ換毛する"
+      ],
+      answer: 0,
+      explanation: "「季節性の明確な換毛期がある」と紹介されていた。"
+    }
+  ]
+});
+</script>
+</body>
+</html>
