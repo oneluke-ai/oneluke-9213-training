@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>研修クイズ 管理ダッシュボード</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+  :root {
+    --ink: #263539;
+    --ink-soft: #55696d;
+    --muted: #92a5a8;
+    --paper: #f7fbfa;
+    --card: #ffffff;
+    --card-line: #e3edec;
+    --tiffany: #0abab5;
+    --tiffany-deep: #078f8b;
+    --tiffany-tint: #e3f7f5;
+    --orange: #f07830;
+    --orange-deep: #d9611c;
+    --orange-tint: #ffe6d2;
+    --green: #3fa34d;
+    --green-tint: #e2f5e0;
+    --red: #e0523f;
+    --red-tint: #fbe3de;
+    --purple: #8b6fc9;
+    --purple-deep: #6a4fae;
+    --purple-tint: #ece6f9;
+    --shadow: 190 30% 25%;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Figtree", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  h1, h2, .display {
+    font-family: "Fredoka", "Hiragino Kaku Gothic ProN", sans-serif;
+    font-weight: 600;
+  }
+  h1 { font-size: 22px; color: var(--tiffany-deep); margin: 0 0 4px; }
+  .subtitle { color: var(--muted); font-size: 13.5px; margin: 0 0 28px; }
+  h2 { font-size: 17px; color: var(--ink); margin: 0 0 4px; }
+  .section-desc { color: var(--ink-soft); font-size: 13px; margin: 0 0 14px; }
+  section { margin-bottom: 40px; }
+
+  /* ---- パスワードゲート ---- */
+  #gate {
+    max-width: 360px;
+    margin: 80px auto;
+    background: var(--card);
+    border: 1px solid var(--card-line);
+    border-radius: 20px;
+    padding: 32px 24px;
+    text-align: center;
+    box-shadow: 0 10px 30px -18px hsl(var(--shadow) / 0.3);
+  }
+  #gate p { font-weight: 600; margin: 0 0 16px; }
+  #gate input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    font-size: 16px;
+    border: 2px solid var(--card-line);
+    border-radius: 12px;
+    margin-bottom: 14px;
+    outline: none;
+  }
+  #gate input:focus { border-color: var(--tiffany); }
+  .btn {
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 22px;
+    font-family: "Fredoka", sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .btn:hover { background: var(--orange-deep); }
+  #gateError { color: var(--red); font-size: 13px; margin-top: 8px; display: none; }
+
+  /* ---- パスワード変更パネル ---- */
+  #pwPanel {
+    background: var(--card);
+    border: 1px solid var(--card-line);
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin-bottom: 28px;
+  }
+  #pwPanel summary { cursor: pointer; font-weight: 600; font-size: 14px; color: var(--ink-soft); }
+  #pwPanel .pw-body { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  #pwPanel input {
+    padding: 10px 12px;
+    font-size: 14px;
+    border: 2px solid var(--card-line);
+    border-radius: 10px;
+    outline: none;
+    width: 220px;
+  }
+  #pwPanel input:focus { border-color: var(--tiffany); }
+  #pwMsg { font-size: 13px; margin-top: 10px; display: none; }
+  #pwMsg.ok { color: var(--green); }
+  #pwMsg.err { color: var(--red); }
+
+  /* ---- テーブル共通 ---- */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--card-line); border-radius: 16px; background: var(--card); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; white-space: nowrap; }
+  thead th {
+    text-align: left;
+    padding: 10px 14px;
+    background: var(--tiffany-tint);
+    color: var(--tiffany-deep);
+    font-family: "Fredoka", sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    position: sticky;
+    top: 0;
+  }
+  tbody td { padding: 10px 14px; border-top: 1px solid var(--card-line); font-variant-numeric: tabular-nums; }
+  tbody tr:hover { background: #fafdfd; }
+  #staffTable tbody tr { cursor: pointer; }
+  .num { text-align: right; }
+
+  /* ---- スタッフ詳細モーダル ---- */
+  #staffModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: hsl(var(--shadow) / 0.45);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  #staffModal.open { display: flex; }
+  #staffModalCard {
+    background: var(--card);
+    border-radius: 20px;
+    max-width: 560px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 24px 24px 20px;
+    box-shadow: 0 20px 50px -20px hsl(var(--shadow) / 0.5);
+  }
+  #staffModalCard .modal-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+  #staffModalCard h3 { font-family: "Fredoka", sans-serif; font-size: 18px; color: var(--tiffany-deep); margin: 0; }
+  #staffModalCard .modal-sub { color: var(--muted); font-size: 12.5px; margin: 0 0 16px; }
+  #staffModalClose {
+    background: none; border: none; cursor: pointer;
+    font-size: 20px; color: var(--muted); line-height: 1; padding: 4px;
+  }
+  #staffModalClose:hover { color: var(--ink); }
+  #staffModalStats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin: 14px 0 18px;
+  }
+  #staffModalStats .mini-stat { background: var(--tiffany-tint); border-radius: 10px; padding: 8px 10px; }
+  #staffModalStats .mini-stat .label { font-size: 10.5px; color: var(--tiffany-deep); margin-bottom: 2px; }
+  #staffModalStats .mini-stat .value { font-family: "Fredoka", sans-serif; font-size: 15px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  /* ---- 受講マトリクス ---- */
+  #matrixTable th, #matrixTable td { white-space: nowrap; }
+  .mx-published { display: block; font-weight: 400; font-size: 10px; color: var(--muted); margin-top: 2px; }
+  #matrixTable thead th { position: sticky; top: 0; z-index: 2; }
+  #matrixTable .mx-name-col { position: sticky; left: 0; z-index: 3; background: var(--card); }
+  #matrixTable thead .mx-name-col { z-index: 4; background: var(--tiffany-tint); }
+  .mx-cell { text-align: center; font-size: 11.5px; }
+  .mx-cell small { display: block; color: var(--muted); font-size: 10px; font-weight: 400; }
+  .mx-perfect { background: var(--tiffany-tint); color: var(--tiffany-deep); }
+  .mx-passed { background: var(--green-tint); color: var(--green); }
+  .mx-failed { background: var(--red-tint); color: var(--red); }
+  .mx-dropped { background: var(--orange-tint); color: var(--orange-deep); }
+  .mx-unlocked { background: var(--purple-tint); color: var(--purple-deep); }
+  .mx-none { color: var(--muted); }
+  .mx-clickable { cursor: pointer; }
+  .mx-clickable:hover { outline: 2px solid var(--tiffany); outline-offset: -2px; }
+  .mx-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--ink-soft); margin: 10px 2px 0; }
+  .mx-legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .mx-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; }
+  .mx-cat-0 { background: var(--tiffany-tint); color: var(--tiffany-deep); }
+  .mx-cat-1 { background: var(--green-tint); color: var(--green); }
+  .mx-cat-2 { background: var(--orange-tint); color: var(--orange-deep); }
+  .mx-cat-3 { background: var(--purple-tint); color: var(--purple-deep); }
+  .pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-size: 11.5px;
+    font-weight: 700;
+    font-family: "Fredoka", sans-serif;
+  }
+  .pill-danger { background: var(--red-tint); color: var(--red); }
+  .pill-warn { background: var(--orange-tint); color: var(--orange-deep); }
+  .pill-ok { background: var(--green-tint); color: var(--green); }
+  .pill-muted { background: var(--card-line); color: var(--muted); }
+
+  /* ---- 実行チェック ---- */
+  #practiceTable th, #practiceTable td { white-space: nowrap; }
+  #practiceTable .pc-name-col { position: sticky; left: 0; z-index: 3; background: var(--card); }
+  #practiceTable thead .pc-name-col { z-index: 4; background: var(--tiffany-tint); }
+  .pc-cell { text-align: center; font-size: 12px; font-weight: 700; }
+  .pc-all { background: var(--green-tint); color: var(--green); }
+  .pc-part { background: var(--orange-tint); color: var(--orange-deep); }
+  .pc-none { color: var(--muted); }
+  .pc-clickable { cursor: pointer; }
+  .pc-clickable:hover { outline: 2px solid var(--tiffany); outline-offset: -2px; }
+  #practiceNote { display: none; background: var(--orange-tint); color: var(--orange-deep); border-radius: 12px; padding: 10px 14px; font-size: 13px; margin: 0 0 12px; }
+  #practiceModal { display: none; position: fixed; inset: 0; background: hsl(var(--shadow) / 0.45); z-index: 110; align-items: center; justify-content: center; padding: 20px; }
+  #practiceModal.open { display: flex; }
+  #practiceModalCard { background: var(--card); border-radius: 20px; max-width: 620px; width: 100%; max-height: 86vh; overflow-y: auto; padding: 24px 24px 20px; box-shadow: 0 20px 50px -20px hsl(var(--shadow) / 0.5); }
+  #practiceModalCard h3 { font-family: "Fredoka", sans-serif; font-size: 18px; color: var(--tiffany-deep); margin: 0; }
+  #practiceModalCard .modal-sub { color: var(--muted); font-size: 12.5px; margin: 2px 0 14px; }
+  #practiceClose { background: none; border: none; cursor: pointer; font-size: 20px; color: var(--muted); line-height: 1; padding: 4px; float: right; }
+  .pc-fields { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .pc-fields label { font-size: 12px; color: var(--ink-soft); display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 180px; }
+  .pc-fields input { padding: 9px 11px; font-size: 14px; border: 2px solid var(--card-line); border-radius: 10px; outline: none; }
+  .pc-fields input:focus { border-color: var(--tiffany); }
+  .pc-item { border-top: 1px solid var(--card-line); padding: 12px 0; }
+  .pc-item-text { font-size: 14px; margin-bottom: 8px; }
+  .pc-item-btns { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .pc-btn { border: 2px solid var(--card-line); background: var(--card); border-radius: 10px; padding: 7px 16px; font-weight: 700; font-size: 13px; cursor: pointer; color: var(--ink-soft); }
+  .pc-btn:hover { border-color: var(--tiffany); }
+  .pc-btn.on-ok { background: var(--green-tint); border-color: var(--green); color: var(--green); }
+  .pc-btn.on-ng { background: var(--orange-tint); border-color: var(--orange-deep); color: var(--orange-deep); }
+  .pc-btn:disabled { opacity: 0.5; cursor: default; }
+  .pc-meta { font-size: 11.5px; color: var(--muted); }
+  #practiceMsg { font-size: 13px; margin-top: 10px; color: var(--red); display: none; }
+
+  #loading, #errorBox { text-align: center; padding: 60px 20px; color: var(--muted); }
+  #errorBox { color: var(--red); display: none; }
+  #content { display: none; }
+
+  .stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }
+  .stat-card {
+    flex: 1;
+    min-width: 140px;
+    background: var(--card);
+    border: 1px solid var(--card-line);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+  .stat-card .label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .stat-card .value { font-family: "Fredoka", sans-serif; font-size: 24px; font-weight: 700; color: var(--tiffany-deep); font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+
+<h1>🐾 研修クイズ 管理ダッシュボード</h1>
+<p class="subtitle">スタッフごとの受講状況・弱点分析（Airtableのデータをリアルタイムで表示）</p>
+
+<div id="gate">
+  <p>パスワードを入力してください</p>
+  <input type="password" id="gatePassword" placeholder="パスワード">
+  <button class="btn" id="gateBtn">開く</button>
+  <div id="gateError">パスワードが違います</div>
+</div>
+
+<div id="loading" style="display:none;">読み込み中…</div>
+<div id="errorBox"></div>
+
+<div id="content">
+
+  <details id="pwPanel">
+    <summary>⚙ ダッシュボードのパスワードを変更する</summary>
+    <div class="pw-body">
+      <input type="password" id="pwNew1" placeholder="新しいパスワード">
+      <input type="password" id="pwNew2" placeholder="新しいパスワード（確認）">
+      <button class="btn" id="pwSaveBtn">保存</button>
+    </div>
+    <div id="pwMsg"></div>
+  </details>
+
+  <div class="stat-row" id="statRow"></div>
+
+  <section>
+    <h2>👤 スタッフ別サマリー</h2>
+    <p class="section-desc">未受講の日数が長い人ほど上に表示されます</p>
+    <div class="table-wrap">
+      <table id="staffTable">
+        <thead>
+          <tr>
+            <th>氏名</th><th>店舗</th><th class="num">完了数</th><th class="num">平均正答率</th>
+            <th class="num">連続記録</th><th class="num">合計pt</th><th>最終受講</th><th>状態</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>🗂 受講マトリクス</h2>
+    <p class="section-desc">誰がどのクイズをまだやっていないか、一覧で確認できます（横スクロールで全クイズを表示）</p>
+    <div class="table-wrap">
+      <table id="matrixTable">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="mx-legend">
+      <span><i style="background:var(--tiffany-tint)"></i>満点</span>
+      <span><i style="background:var(--green-tint)"></i>合格</span>
+      <span><i style="background:var(--red-tint)"></i>不合格</span>
+      <span><i style="background:var(--orange-tint)"></i>開始したが未完了</span>
+      <span><i style="background:var(--purple-tint)"></i>手動解放済み（未受講）</span>
+      <span><i style="background:var(--card-line)"></i>未着手</span>
+    </div>
+    <p class="section-desc" style="margin-top:8px;">「未着手」「手動解放済み」のセルはクリックで解放・取消ができます</p>
+  </section>
+
+  <section>
+    <h2>✅ 実行チェック（現場で実際にできているか）</h2>
+    <p class="section-desc">クイズに合格した技術を、オーナー・先輩が現場で見て確認します。セルを押すと、そのスタッフ・そのクイズのチェック項目が開きます。数字は「できた項目 / 全項目」です</p>
+    <div id="practiceNote"></div>
+    <div class="table-wrap">
+      <table id="practiceTable">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="mx-legend">
+      <span><i style="background:var(--green-tint)"></i>全項目できた</span>
+      <span><i style="background:var(--orange-tint)"></i>一部できた</span>
+      <span><i style="background:var(--card-line)"></i>まだ確認していない</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>📉 離脱一覧（動画は確認したが、採点まで進んでいない）</h2>
+    <p class="section-desc">「確認した」を押してから30分以上、採点が完了していない挑戦を表示します（受講中の可能性がある直近30分は除外）</p>
+    <div class="table-wrap">
+      <table id="dropoffTable">
+        <thead>
+          <tr><th>氏名</th><th>動画</th><th>開始日</th><th>経過</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>⚠️ 弱点分析（設問別 不正解率）</h2>
+    <p class="section-desc">複数人が同じ問題を間違えているほど上に表示されます（2回以上の回答実績がある問題のみ集計）</p>
+    <div class="table-wrap">
+      <table id="weaknessTable">
+        <thead>
+          <tr><th>動画</th><th>設問</th><th class="num">回答数</th><th class="num">不正解数</th><th class="num">不正解率</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<div id="staffModal">
+  <div id="staffModalCard">
+    <div class="modal-head">
+      <div>
+        <h3 id="staffModalName"></h3>
+        <p class="modal-sub" id="staffModalSub"></p>
+      </div>
+      <button id="staffModalClose" aria-label="閉じる">✕</button>
+    </div>
+    <div id="staffModalStats"></div>
+    <div class="table-wrap">
+      <table id="staffModalTable">
+        <thead>
+          <tr><th>日付</th><th>動画</th><th class="num">点数</th><th>判定</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 店舗・スタッフのマスタとAirtable接続情報（STORE_OPTIONS / STAFF_BY_STORE / AIRTABLE_*）を使い回す -->
+<div id="practiceModal">
+  <div id="practiceModalCard">
+    <button id="practiceClose" aria-label="閉じる">×</button>
+    <h3 id="practiceTitle"></h3>
+    <p class="modal-sub" id="practiceSub"></p>
+    <div class="pc-fields">
+      <label>確認した人（オーナー・先輩の名前）<input type="text" id="practiceChecker" placeholder="例：Takeshi"></label>
+      <label>メモ（任意・次に押した項目に記録されます）<input type="text" id="practiceMemo" placeholder="例：左足の持ち方はOK"></label>
+    </div>
+    <div id="practiceItems"></div>
+    <div id="practiceMsg"></div>
+  </div>
+</div>
+
+<script src="quiz-engine.js"></script>
+<script src="practice-check.js"></script>
+<script>
+/**
+ * 研修クイズ 管理ダッシュボード ver002（2026-09-05）
+ * パスワードゲート＋Airtable直接読み込みで、スタッフ別の受講状況・弱点分析を表示する。
+ * 受講データの読み込みは読み取り専用。パスワードはAirtable「ダッシュボード設定」テーブルで管理し、
+ * オーナーがダッシュボード上の「パスワードを変更する」フォームから、コード変更なしで変更できる
+ * （フォーム送信はMake Webhook経由。書き込みはこの1レコードのみ）。
+ */
+
+// パスワード保護（本格的な認証ではなく、社内向けの目隠し程度のもの）。
+// 注意：正しいパスワードはAirtable「ダッシュボード設定」テーブルだけが持つ。取得に失敗した時に
+// ソースコード上の固定値へフォールバックすると、パスワードを変更した後も、通信を意図的に
+// 遮断するだけで旧パスワードが永久に使えてしまう「消せない抜け道」になる。そのため、
+// 取得できなかった場合は既定値を使わず、ゲート自体を開けない（下のfetchCurrentPassword参照）。
+const AIRTABLE_SETTINGS_TABLE_NAME = "ダッシュボード設定";
+const UNLOCK_KEY = 'dashboardUnlocked';
+
+// パスワード変更フォームの送信先（Make: Webhook→Filter(合言葉)→Airtable Update a Record）
+const PW_CHANGE_WEBHOOK_URL = atob("aHR0cHM6Ly9ob29rLnVzMi5tYWtlLmNvbS9zZWVxbDRjcnpmOHd4c3hyZ3Y4cXFrNGdybnYxc3dhdw==");
+const PW_CHANGE_SHARED_SECRET = "9213";
+
+// 手動解放（受講マトリクスからの解放・取消）の送信先。
+// Make: Webhook→Filter(合言葉)→Airtable Create a Record（テーブル「手動解放ログ」）
+// テーブル名（AIRTABLE_MANUAL_UNLOCK_TABLE_NAME）はquiz-engine.js側で定義済みのものをそのまま使う
+// （クイズ一覧.html側のfetchManualUnlocksと同じテーブルを見に行くため、二重定義を避けている）。
+const MANUAL_UNLOCK_WEBHOOK_URL = atob("aHR0cHM6Ly9ob29rLnVzMi5tYWtlLmNvbS9vMzg3aTJhazRlNHdneTdycHp1d24zMDV4eWd1cngwYg==");
+const MANUAL_UNLOCK_SHARED_SECRET = "9213";
+
+let currentPassword = null; // 取得できるまでは、いかなる入力も拒否する（下のtryUnlock参照）
+let allRecords = []; // スタッフ詳細モーダル用に、読み込んだ受講記録を保持しておく
+let allPairs = [];   // 「開始→完了」のペア（pairAttemptsの結果）。所要時間の計算用に保持
+let allOrphans = [];  // ペアにならなかった「開始」（＝離脱候補）。モーダルの離脱内訳用に保持
+let allRaw = [];      // Airtableから取得した生の全レコード（ステータス「開始」「完了」両方含む）
+let staffSummaryMap = {}; // name|store → buildStaffSummaryの1件。モーダルの上部統計用に保持
+
+// クイズのマスタ一覧（タイトル・カテゴリー・公開日）。クイズ一覧.html/deploy/index.htmlのQUIZZES配列と
+// タイトル・カテゴリーの内容を一致させること（新しいクイズを追加した時は両方に反映する）。
+// quizIdは【本番（deploy）側】の各クイズファイルのconfig.quiz_id。ローカル（日本語ファイル名）と
+// deploy（英語ファイル名）ではquiz_idの値そのものが違う（本番はdeploy側の値で送信されるため、
+// 必ずdeploy/index.htmlのQUIZZES配列のfile値・deploy側各クイズファイルのconfig.quiz_idと一致させる）。
+// publishedDateはinstruction.mdに明記された制作日を代用（実際の案内日とズレる可能性あり）。
+// 記録が見当たらないものはnull（マトリクスには「不明」と表示される）。
+const QUIZ_CATALOG = [
+  { quizId: "dakko-no-shikata", title: "抱っこの仕方", category: "犬の扱い方", publishedDate: "2026-08-22" },
+  { quizId: "ashi-no-agekata", title: "足の上げ方", category: "犬の扱い方", publishedDate: null },
+  { quizId: "dry-blow", title: "ドライ&ブロー", category: "犬の扱い方", publishedDate: null },
+  { quizId: "zenshi-tsumekiri", title: "前肢爪切り", category: "犬の扱い方", publishedDate: "2026-09-22" },
+  { quizId: "koshi-tsumekiri", title: "後肢爪切り", category: "犬の扱い方", publishedDate: "2026-09-22" },
+  { quizId: "tsume-yasuri", title: "爪やすり", category: "犬の扱い方", publishedDate: "2026-10-02" },
+  { quizId: "dougu-1", title: "道具の説明①", category: "グルーマー", publishedDate: null },
+  { quizId: "pin-brush", title: "ピンブラシの使い方", category: "グルーマー", publishedDate: "2026-09-22" },
+  { quizId: "slicker-brush", title: "スリッカーの動かし方", category: "グルーマー", publishedDate: "2026-09-22" },
+  { quizId: "dougu-2", title: "道具の説明②", category: "グルーマー", publishedDate: "2026-10-02" },
+  { quizId: "oshiri-cut", title: "お尻カットガイド", category: "カット", publishedDate: null },
+  { quizId: "muzzle-cut", title: "プードルマズルカット", category: "カット", publishedDate: null },
+  { quizId: "asime-cut-sougou", title: "アシメカット総合", category: "カット", publishedDate: null },
+  { quizId: "dog-wellness-master-3", title: "Dog Wellness Master 第三弾", category: "特別セミナー", publishedDate: null },
+  { quizId: "yasashisa-grooming-1-1-part1", title: "やさしさGrooming第一弾① Part1", category: "特別セミナー", publishedDate: "2026-08-23" },
+  { quizId: "yasashisa-grooming-1-1-part2", title: "やさしさGrooming第一弾① Part2", category: "特別セミナー", publishedDate: "2026-08-23" },
+  { quizId: "yasashisa-grooming-1-1-part3", title: "やさしさGrooming第一弾① Part3", category: "特別セミナー", publishedDate: "2026-08-23" },
+  { quizId: "yasashisa-grooming-1-2-part1", title: "やさしさGrooming第一弾② Part1", category: "特別セミナー", publishedDate: "2026-08-23" },
+  { quizId: "yasashisa-grooming-1-2-part2", title: "やさしさGrooming第一弾② Part2", category: "特別セミナー", publishedDate: "2026-08-23" },
+  { quizId: "yasashisa-grooming-1-2-part3", title: "やさしさGrooming第一弾② Part3", category: "特別セミナー", publishedDate: "2026-08-23" },
+  { quizId: "yasashisa-grooming-1-3-part1", title: "やさしさGrooming第一弾③ Part1", category: "特別セミナー", publishedDate: "2026-08-23" },
+  { quizId: "yasashisa-grooming-1-3-part2", title: "やさしさGrooming第一弾③ Part2", category: "特別セミナー", publishedDate: "2026-08-23" },
+  { quizId: "dog-stress-master-2-part1", title: "Dog Stress Master 第二弾 Part1", category: "特別セミナー", publishedDate: "2026-08-23" },
+  { quizId: "dog-stress-master-2-part2", title: "Dog Stress Master 第二弾 Part2", category: "特別セミナー", publishedDate: "2026-08-23" },
+  { quizId: "dog-stress-master-2-part3", title: "Dog Stress Master 第二弾 Part3", category: "特別セミナー", publishedDate: "2026-08-23" },
+  { quizId: "dog-history-1-part1", title: "Dog History 第一弾 Part1", category: "特別セミナー", publishedDate: "2026-08-23" },
+  { quizId: "dog-history-1-part2", title: "Dog History 第一弾 Part2", category: "特別セミナー", publishedDate: "2026-08-23" },
+  { quizId: "dog-history-1-part3", title: "Dog History 第一弾 Part3", category: "特別セミナー", publishedDate: "2026-08-23" },
+];
+const CATEGORY_ORDER = ["犬の扱い方", "グルーマー", "カット", "特別セミナー"];
+
+async function fetchCurrentPassword() {
+  try {
+    const params = new URLSearchParams({ pageSize: '1' });
+    params.append('fields[]', '値');
+    params.append('filterByFormula', '{設定キー}="dashboard_password"');
+    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_SETTINGS_TABLE_NAME)}?${params.toString()}`;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_READONLY_TOKEN}` } });
+    if (!res.ok) throw new Error('status ' + res.status);
+    const data = await res.json();
+    const rec = (data.records || [])[0];
+    if (rec && rec.fields && rec.fields['値']) return rec.fields['値'];
+    return null; // 設定レコードがまだ無い場合も既定値へは逃がさない（Takeshiのセットアップ待ち）
+  } catch (e) {
+    console.log('[パスワード取得] Airtableから取得できませんでした:', e.message);
+    return null;
+  }
+}
+
+document.getElementById('gateBtn').onclick = tryUnlock;
+document.getElementById('gatePassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryUnlock(); });
+
+function tryUnlock() {
+  const errEl = document.getElementById('gateError');
+  if (currentPassword == null) {
+    errEl.textContent = 'パスワード情報の読み込みに失敗しました。時間をおいてページを再読み込みしてください。';
+    errEl.style.display = 'block';
+    return;
+  }
+  const val = document.getElementById('gatePassword').value;
+  if (val === currentPassword) {
+    try { sessionStorage.setItem(UNLOCK_KEY, '1'); } catch (e) {}
+    document.getElementById('gate').style.display = 'none';
+    loadDashboard();
+  } else {
+    errEl.textContent = 'パスワードが違います';
+    errEl.style.display = 'block';
+  }
+}
+
+(async function initGate() {
+  currentPassword = await fetchCurrentPassword();
+  let unlocked = false;
+  try { unlocked = sessionStorage.getItem(UNLOCK_KEY) === '1'; } catch (e) {}
+  if (unlocked) {
+    document.getElementById('gate').style.display = 'none';
+    loadDashboard();
+  }
+})();
+
+// --- パスワード変更フォーム ---
+function showPwMsg(text, ok) {
+  const box = document.getElementById('pwMsg');
+  box.textContent = text;
+  box.className = ok ? 'ok' : 'err';
+  box.style.display = 'block';
+}
+
+document.getElementById('pwSaveBtn').onclick = async () => {
+  const p1 = document.getElementById('pwNew1').value;
+  const p2 = document.getElementById('pwNew2').value;
+  if (p1.length < 4) { showPwMsg('4文字以上で入力してください', false); return; }
+  if (p1 !== p2) { showPwMsg('2つの入力が一致しません', false); return; }
+
+  const btn = document.getElementById('pwSaveBtn');
+  btn.disabled = true;
+  try {
+    const res = await fetch(PW_CHANGE_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 合言葉: PW_CHANGE_SHARED_SECRET, 新パスワード: p1 }),
+    });
+    if (!res.ok) throw new Error('送信失敗: status ' + res.status);
+    currentPassword = p1;
+    document.getElementById('pwNew1').value = '';
+    document.getElementById('pwNew2').value = '';
+    showPwMsg('変更しました。次回からこのパスワードでログインできます。', true);
+  } catch (e) {
+    console.error('[パスワード変更] 失敗:', e);
+    showPwMsg('変更に失敗しました。時間をおいて再度お試しください。', false);
+  } finally {
+    btn.disabled = false;
+  }
+};
+
+// --- Airtableから全件取得（100件ごとにページ送り） ---
+// 「試行ID」列はまだAirtable側に無い可能性がある（quiz-engine.js側は先に対応済みだが、
+// Airtableへの列追加・Makeマッピングはこれから）。存在しない列をfields[]に指定するとAirtableは
+// 422で全体を拒否するため、まずは付きで試し、422ならその列を抜いて再取得する。
+async function fetchRecordsWithFields(fields) {
+  let all = [];
+  let offset;
+  do {
+    const params = new URLSearchParams({ pageSize: '100' });
+    fields.forEach(f => params.append('fields[]', f));
+    if (offset) params.append('offset', offset);
+    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}?${params.toString()}`;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_READONLY_TOKEN}` } });
+    if (!res.ok) throw new Error('Airtable取得失敗: status ' + res.status);
+    const data = await res.json();
+    all = all.concat((data.records || []).map(r => r.fields));
+    offset = data.offset;
+  } while (offset);
+  return all;
+}
+
+async function fetchAllRecords() {
+  const fields = ['受講者名', '所属店舗', '動画タイトル', 'クイズID', '受講日時', 'ステータス', '試行ID', '正答数', '総問題数', '正答率', '合格判定', '満点フラグ', '回答詳細'];
+  try {
+    return await fetchRecordsWithFields(fields);
+  } catch (e) {
+    if (String(e.message).includes('422')) {
+      console.warn('[ダッシュボード] 「試行ID」列がAirtableにまだ無いため、それを除いて再取得します');
+      return await fetchRecordsWithFields(fields.filter(f => f !== '試行ID'));
+    }
+    throw e;
+  }
+}
+
+// 「回答詳細」テキストを設問ごとに分解する。
+// 想定フォーマット：
+//   Q1. 質問文
+//   回答: 選んだ選択肢（正解 or 不正解）
+//   正解: 正しい選択肢
+// が空行区切りで並んでいる。
+function parseAnswerDetail(text) {
+  if (!text) return [];
+  return text.split(/\n\n+/).map(block => {
+    const lines = block.split('\n').filter(Boolean);
+    if (!lines.length) return null;
+    const qMatch = lines[0].match(/^Q\d+\.\s*(.+)$/);
+    const question = qMatch ? qMatch[1] : lines[0];
+    const ansLine = lines.find(l => l.indexOf('回答:') === 0) || '';
+    const isCorrect = ansLine.indexOf('（正解）') !== -1;
+    return { question, isCorrect };
+  }).filter(Boolean);
+}
+
+function buildStaffSummary(records) {
+  const groups = {};
+  records.forEach(r => {
+    const name = r['受講者名'] || '';
+    const store = r['所属店舗'] || '';
+    if (!name) return;
+    const key = name + '|' + store;
+    if (!groups[key]) groups[key] = { name, store, records: [] };
+    groups[key].records.push(r);
+  });
+
+  // 名簿にいる全員も、実績ゼロでも一覧に出す（「一度もやっていない人」を可視化するため）
+  // STORE_OPTIONSは{ name, prefecture, phone }の配列（店舗検索機能のため）。
+  // STAFF_BY_STOREは今まで通り店舗名の文字列でキーする。
+  STORE_OPTIONS.forEach(storeInfo => {
+    const store = storeInfo.name;
+    (STAFF_BY_STORE[store] || []).forEach(name => {
+      const key = name + '|' + store;
+      if (!groups[key]) groups[key] = { name, store, records: [] };
+    });
+  });
+
+  const today = todayStr();
+
+  return Object.values(groups).map(g => {
+    const recs = g.records;
+    const dates = [...new Set(recs.map(r => isoToLocalDateStr(r['受講日時'])).filter(Boolean))].sort();
+    const quizIds = new Set(recs.filter(r => r['クイズID']).map(r => r['クイズID']));
+
+    let rateSum = 0, rateCount = 0;
+    recs.forEach(r => {
+      if (r['正答数'] != null && r['総問題数']) { rateSum += r['正答数'] / r['総問題数']; rateCount++; }
+    });
+    const avgRate = rateCount ? Math.round((rateSum / rateCount) * 100) : null;
+
+    const lastDate = dates.length ? dates[dates.length - 1] : null;
+    const daysSince = lastDate ? daysBetween(lastDate, today) : null;
+
+    let xp = 0;
+    recs.forEach(r => { xp += (r['正答数'] != null && r['正答数'] === r['総問題数']) ? 20 : 10; });
+
+    let streak = dates.length ? 1 : 0;
+    for (let i = dates.length - 1; i > 0; i--) {
+      const gap = daysBetween(dates[i - 1], dates[i]);
+      if (gap === 1 || gap === 2) streak++;
+      else break;
+    }
+    // 最終受講から2日を超えて空いていたら、連続記録は途切れている（quiz-engine.jsの
+    // getDisplayStreak()と同じ猶予ルール）。過去の連続記録が今も続いているように
+    // 見えてしまうのを防ぐ。
+    if (daysSince != null && daysSince > 2) streak = 0;
+
+    return {
+      name: g.name, store: g.store,
+      completedCount: recs.length,
+      uniqueQuizCount: quizIds.size,
+      avgRate, lastDate, daysSince, xp, streak,
+    };
+  }).sort((a, b) => {
+    if (a.daysSince == null && b.daysSince == null) return a.name.localeCompare(b.name, 'ja');
+    if (a.daysSince == null) return -1;
+    if (b.daysSince == null) return 1;
+    return b.daysSince - a.daysSince;
+  });
+}
+
+function buildWeaknessAnalysis(records) {
+  const stats = {};
+  records.forEach(r => {
+    const items = parseAnswerDetail(r['回答詳細']);
+    items.forEach(item => {
+      const key = (r['動画タイトル'] || '') + '|' + item.question;
+      if (!stats[key]) stats[key] = { video: r['動画タイトル'] || '', question: item.question, total: 0, wrong: 0 };
+      stats[key].total++;
+      if (!item.isCorrect) stats[key].wrong++;
+    });
+  });
+  return Object.values(stats)
+    .map(s => ({ ...s, wrongRate: Math.round((s.wrong / s.total) * 100) }))
+    .filter(s => s.total >= 2)
+    .sort((a, b) => b.wrongRate - a.wrongRate || b.total - a.total);
+}
+
+function statusPill(daysSince) {
+  if (daysSince == null) return `<span class="pill pill-muted">未受講</span>`;
+  if (daysSince === 0) return `<span class="pill pill-ok">本日受講</span>`;
+  if (daysSince <= 3) return `<span class="pill pill-ok">${daysSince}日前</span>`;
+  if (daysSince <= 7) return `<span class="pill pill-warn">${daysSince}日前</span>`;
+  return `<span class="pill pill-danger">${daysSince}日前</span>`;
+}
+
+function renderStats(staffSummary, records, dropoffStats) {
+  const totalStaff = staffSummary.length;
+  const neverDone = staffSummary.filter(s => s.daysSince == null).length;
+  const inactive7 = staffSummary.filter(s => s.daysSince != null && s.daysSince > 7).length;
+  const totalCompletions = records.length;
+
+  const stats = [
+    { label: '登録スタッフ数', value: totalStaff },
+    { label: '累計受講回数', value: totalCompletions },
+    { label: '一度も未受講', value: neverDone },
+    { label: '7日以上未受講', value: inactive7 },
+    { label: '離脱率', value: dropoffStats.dropoffRate + '%' },
+    { label: '平均所要時間', value: dropoffStats.avgDurationMin == null ? '—' : dropoffStats.avgDurationMin + '分' },
+  ];
+  document.getElementById('statRow').innerHTML = stats.map(s => `
+    <div class="stat-card"><div class="label">${escapeHtml(s.label)}</div><div class="value">${s.value}</div></div>
+  `).join('');
+}
+
+function renderStaffTable(staffSummary) {
+  const tbody = document.querySelector('#staffTable tbody');
+  tbody.innerHTML = staffSummary.map(s => `
+    <tr data-name="${escapeHtml(s.name)}" data-store="${escapeHtml(s.store)}">
+      <td>${escapeHtml(s.name)}</td>
+      <td>${escapeHtml(s.store)}</td>
+      <td class="num">${s.completedCount}</td>
+      <td class="num">${s.avgRate == null ? '—' : s.avgRate + '%'}</td>
+      <td class="num">🔥${s.streak}</td>
+      <td class="num">⭐${s.xp}</td>
+      <td>${s.lastDate || '—'}</td>
+      <td>${statusPill(s.daysSince)}</td>
+    </tr>
+  `).join('');
+}
+
+// --- スタッフ別詳細モーダル ---
+// 該当スタッフの受講履歴を、新しい順に並べて返す（純粋関数・テスト容易）。
+function getStaffHistory(records, name, store) {
+  return records
+    .filter(r => (r['受講者名'] || '') === name && (r['所属店舗'] || '') === store)
+    .map(r => {
+      const total = r['総問題数'];
+      const correct = r['正答数'];
+      const perfect = correct != null && total != null && correct === total;
+      const passed = correct != null && total > 0 && (correct / total) >= PASS_THRESHOLD;
+      return {
+        rawDate: r['受講日時'] || '',
+        date: isoToLocalDateStr(r['受講日時']) || '—',
+        video: r['動画タイトル'] || '(不明)',
+        correct, total, perfect, passed,
+      };
+    })
+    .sort((a, b) => (b.rawDate || '').localeCompare(a.rawDate || ''));
+}
+
+function historyStatusPill(h) {
+  if (h.correct == null || !h.total) return `<span class="pill pill-muted">—</span>`;
+  if (h.perfect) return `<span class="pill pill-ok">🌟パーフェクト</span>`;
+  if (h.passed) return `<span class="pill pill-ok">✅合格</span>`;
+  return `<span class="pill pill-danger">❌不合格</span>`;
+}
+
+// このスタッフの「受講回数（開始した回数）・採点実行回数（完了した回数）・離脱回数」を集計する。
+// 採点実行回数はallRecords（完了レコード全件）から数える＝スタッフ別サマリーの完了数と必ず一致させる
+// （pairAttemptsは「開始」記録が無い古い完了データを拾えないため、それだけを使うと過少カウントになる）。
+// 離脱回数だけは、開始とのペアリングが必要なのでallOrphansを使う。
+function getPersonDropoffSummary(name, store) {
+  const now = Date.now();
+  const totalCompletions = allRecords.filter(r => (r['受講者名'] || '') === name && (r['所属店舗'] || '') === store).length;
+  const totalStartsRaw = allRaw.filter(r => (r['受講者名'] || '') === name && (r['所属店舗'] || '') === store && r['ステータス'] === '開始').length;
+  const personOrphans = allOrphans.filter(o => o.name === name && o.store === store);
+  const confirmedDropoffs = personOrphans.filter(o => (now - new Date(o.startTime).getTime()) / 60000 > DROPOFF_GRACE_MINUTES);
+  return {
+    totalStarts: totalStartsRaw,
+    totalCompletions,
+    totalDropoffs: confirmedDropoffs.length,
+  };
+}
+
+function renderStaffModalStats(name, store) {
+  const s = staffSummaryMap[name + '|' + store] || {};
+  const d = getPersonDropoffSummary(name, store);
+  const stats = [
+    { label: '完了数', value: s.completedCount ?? 0 },
+    { label: '平均正答率', value: s.avgRate == null ? '—' : s.avgRate + '%' },
+    { label: '連続記録', value: '🔥' + (s.streak ?? 0) },
+    { label: '合計pt', value: '⭐' + (s.xp ?? 0) },
+    { label: '最終受講', value: s.lastDate || '—' },
+    { label: '受講/採点/離脱', value: `${d.totalStarts}/${d.totalCompletions}/${d.totalDropoffs}` },
+  ];
+  document.getElementById('staffModalStats').innerHTML = stats.map(st => `
+    <div class="mini-stat"><div class="label">${escapeHtml(st.label)}</div><div class="value">${st.value}</div></div>
+  `).join('');
+}
+
+function openStaffModal(name, store) {
+  const history = getStaffHistory(allRecords, name, store);
+  document.getElementById('staffModalName').textContent = name;
+  document.getElementById('staffModalSub').textContent = store + '｜受講履歴 ' + history.length + '件';
+  renderStaffModalStats(name, store);
+  const tbody = document.querySelector('#staffModalTable tbody');
+  tbody.innerHTML = history.length
+    ? history.map(h => `
+        <tr>
+          <td>${escapeHtml(h.date)}</td>
+          <td>${escapeHtml(h.video)}</td>
+          <td class="num">${h.correct == null ? '—' : h.correct + '/' + h.total}</td>
+          <td>${historyStatusPill(h)}</td>
+        </tr>
+      `).join('')
+    : `<tr><td colspan="4" style="text-align:center; color:var(--muted);">まだ受講記録がありません</td></tr>`;
+  document.getElementById('staffModal').classList.add('open');
+}
+
+function closeStaffModal() {
+  document.getElementById('staffModal').classList.remove('open');
+}
+
+document.querySelector('#staffTable tbody').addEventListener('click', (e) => {
+  const row = e.target.closest('tr');
+  if (!row || !row.dataset.name) return;
+  openStaffModal(row.dataset.name, row.dataset.store);
+});
+document.getElementById('staffModalClose').onclick = closeStaffModal;
+document.getElementById('staffModal').addEventListener('click', (e) => {
+  if (e.target.id === 'staffModal') closeStaffModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeStaffModal();
+});
+
+function renderWeaknessTable(weakness) {
+  const tbody = document.querySelector('#weaknessTable tbody');
+  if (!weakness.length) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted);">まだ集計できるデータがありません</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = weakness.slice(0, 30).map(w => `
+    <tr>
+      <td>${escapeHtml(w.video)}</td>
+      <td>${escapeHtml(w.question)}</td>
+      <td class="num">${w.total}</td>
+      <td class="num">${w.wrong}</td>
+      <td class="num">${w.wrongRate >= 50 ? `<span class="pill pill-danger">${w.wrongRate}%</span>` : w.wrongRate >= 25 ? `<span class="pill pill-warn">${w.wrongRate}%</span>` : w.wrongRate + '%'}</td>
+    </tr>
+  `).join('');
+}
+
+// --- 離脱・受講ペース分析 ---
+// 開始しなかった猶予期間。始めたばかりの人を「離脱」と誤判定しないための待ち時間。
+const DROPOFF_GRACE_MINUTES = 30;
+
+// 「開始」と「完了」を1回の挑戦単位でペアリングする。
+// ①試行IDが両方に付いていれば、それで確実に対応付ける（2026-09-06以降のデータ）
+// ②試行IDが無い古いデータは、同じ人・同じクイズの中で「直前の未消化の開始」と時系列でペアリングする（後方互換）
+function pairAttempts(allRawRecords) {
+  const groups = {};
+  allRawRecords.forEach(r => {
+    const name = r['受講者名'] || '';
+    const store = r['所属店舗'] || '';
+    const quizId = r['クイズID'] || r['動画タイトル'] || '';
+    if (!name || !quizId || !r['ステータス']) return;
+    const key = name + '|' + store + '|' + quizId;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(r);
+  });
+
+  const pairs = [];
+  const orphanStarts = [];
+
+  Object.values(groups).forEach(rows => {
+    rows.sort((a, b) => (a['受講日時'] || '').localeCompare(b['受講日時'] || ''));
+    const starts = rows.filter(r => r['ステータス'] === '開始');
+    const completes = rows.filter(r => r['ステータス'] === '完了');
+    const used = new Set();
+
+    // ① 試行IDが一致するものを確実にペアリング
+    completes.forEach(c => {
+      if (!c['試行ID']) return;
+      const si = starts.findIndex((s, i) => !used.has(i) && s['試行ID'] === c['試行ID']);
+      if (si !== -1) { used.add(si); c.__start = starts[si]; }
+    });
+
+    // ② 試行IDが「そもそも無い」（旧データ）場合だけ、直前の未消化の開始とペアリング。
+    // 試行IDが付いているのにペアが見つからなかった完了（開始の送信漏れ等）は、
+    // 別人・別試行の開始と誤って結び付けないよう、ここでは対象にせず未ペアのままにする。
+    completes.filter(c => !c.__start && !c['試行ID']).forEach(c => {
+      let bestIdx = -1;
+      starts.forEach((s, i) => {
+        if (used.has(i)) return;
+        if ((s['受講日時'] || '') <= (c['受講日時'] || '')) {
+          if (bestIdx === -1 || s['受講日時'] > starts[bestIdx]['受講日時']) bestIdx = i;
+        }
+      });
+      if (bestIdx !== -1) { used.add(bestIdx); c.__start = starts[bestIdx]; }
+    });
+
+    completes.forEach(c => {
+      if (!c.__start) return;
+      const startMs = new Date(c.__start['受講日時']).getTime();
+      const endMs = new Date(c['受講日時']).getTime();
+      pairs.push({
+        name: c['受講者名'], store: c['所属店舗'], video: c['動画タイトル'],
+        startTime: c.__start['受講日時'], endTime: c['受講日時'],
+        durationMin: (endMs - startMs) / 60000,
+      });
+    });
+
+    starts.forEach((s, i) => {
+      if (used.has(i)) return; // 完了とペアリングできた＝離脱ではない
+      orphanStarts.push({ name: s['受講者名'], store: s['所属店舗'], video: s['動画タイトル'], startTime: s['受講日時'] });
+    });
+  });
+
+  return { pairs, orphanStarts };
+}
+
+// totalCompletionsは完了レコード全件数（スタッフ別サマリーの完了数と同じ計算）を渡す。
+// pairs（開始とペアリングできた完了だけ）を分母に使うと、開始記録の無い古い完了データが
+// 丸ごと分母から抜け落ち、離脱率が実態より大幅に高く出てしまう（getPersonDropoffSummaryで
+// 一度直したのと同じ種類のバグ）。
+function buildDropoffStats(pairs, orphanStarts, totalCompletions) {
+  const now = Date.now();
+  const confirmedDropoffs = orphanStarts.filter(o => (now - new Date(o.startTime).getTime()) / 60000 > DROPOFF_GRACE_MINUTES);
+  const totalAttempts = totalCompletions + confirmedDropoffs.length;
+  const dropoffRate = totalAttempts ? Math.round((confirmedDropoffs.length / totalAttempts) * 100) : 0;
+  // 所要時間は、開始・完了の両方の時刻が分かっている試行（pairs）でしか計算できない。
+  const avgDurationMin = pairs.length ? Math.round((pairs.reduce((s, p) => s + p.durationMin, 0) / pairs.length) * 10) / 10 : null;
+  return { confirmedDropoffs, dropoffRate, avgDurationMin, totalAttempts };
+}
+
+function renderDropoffTable(confirmedDropoffs) {
+  const tbody = document.querySelector('#dropoffTable tbody');
+  const today = todayStr();
+  const sorted = [...confirmedDropoffs].sort((a, b) => (b.startTime || '').localeCompare(a.startTime || ''));
+  if (!sorted.length) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--muted);">離脱は見つかりませんでした</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = sorted.slice(0, 30).map(o => {
+    const dateStr = isoToLocalDateStr(o.startTime) || '—';
+    const days = dateStr !== '—' ? daysBetween(dateStr, today) : null;
+    return `
+      <tr>
+        <td>${escapeHtml(o.name)}</td>
+        <td>${escapeHtml(o.video)}</td>
+        <td>${dateStr}</td>
+        <td>${days == null ? '—' : days + '日前'}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// --- 受講マトリクス（縦：スタッフ、横：カテゴリー別クイズ） ---
+// セルの状態は次の優先順で決める：
+// ①完了データがあればその中の一番良い結果（満点＞合格＞不合格）
+// ②完了が無く、管理者が手動解放していれば「解放済み（未受講）」
+// ③完了が無く、離脱（開始したが未完了）だけあれば「未完了」
+// ④どれも無ければ「未着手」
+function getCellStatus(records, orphanStarts, manualUnlockSet, name, store, quiz) {
+  const matches = records.filter(r => (r['受講者名'] || '') === name && (r['所属店舗'] || '') === store &&
+    ((r['クイズID'] && r['クイズID'] === quiz.quizId) || (!r['クイズID'] && (r['動画タイトル'] || '') === quiz.title)));
+  if (matches.length) {
+    const perfect = matches.find(r => r['満点フラグ'] === 'はい' || (r['正答数'] != null && r['正答数'] === r['総問題数']));
+    const passed = matches.find(r => r['合格判定'] === '合格' || (r['正答数'] != null && r['総問題数'] > 0 && (r['正答数'] / r['総問題数']) >= PASS_THRESHOLD));
+    const best = perfect || passed || matches[matches.length - 1];
+    const dateStr = isoToLocalDateStr(best['受講日時']);
+    if (perfect) return { status: 'perfect', dateStr };
+    if (passed) return { status: 'passed', dateStr };
+    return { status: 'failed', dateStr };
+  }
+  if (manualUnlockSet.has(name + '|' + store + '|' + quiz.quizId)) {
+    return { status: 'unlocked', dateStr: null };
+  }
+  const now = Date.now();
+  const orphan = orphanStarts.find(o => o.name === name && o.store === store && o.video === quiz.title);
+  if (orphan && (now - new Date(orphan.startTime).getTime()) / 60000 > DROPOFF_GRACE_MINUTES) {
+    return { status: 'dropped', dateStr: isoToLocalDateStr(orphan.startTime) };
+  }
+  return { status: 'none', dateStr: null };
+}
+
+function buildMatrix(records, orphanStarts, manualUnlockSet, staffSummary) {
+  const groups = CATEGORY_ORDER.map(cat => ({ category: cat, quizzes: QUIZ_CATALOG.filter(q => q.category === cat) }));
+  const rows = staffSummary.map(s => ({
+    name: s.name, store: s.store,
+    cells: QUIZ_CATALOG.map(q => Object.assign({ quizId: q.quizId, title: q.title },
+      getCellStatus(records, orphanStarts, manualUnlockSet, s.name, s.store, q))),
+  }));
+  return { groups, rows };
+}
+
+const MX_LABEL = { perfect: '満点', passed: '合格', failed: '不合格', dropped: '未完了', unlocked: '🔓解放済み', none: '–' };
+const MX_CLASS = { perfect: 'mx-perfect', passed: 'mx-passed', failed: 'mx-failed', dropped: 'mx-dropped', unlocked: 'mx-unlocked', none: 'mx-none' };
+// クリックで操作できるのは「未着手（これから解放できる）」「解放済み（取り消せる）」の2状態だけ。
+// 既に受講済み・離脱中のセルは、手動解放を触っても意味が無いので操作不可にする。
+const MX_CLICKABLE = { none: true, unlocked: true };
+
+// unlockAvailable=falseの時（「手動解放ログ」の取得に失敗した時）は、未着手・解放済みの
+// セルであっても一切クリックできないようにする。取得できていない状態で見た目だけの「未着手」
+// を信じてクリックすると、実際は既に解放済みのクイズに気付かず重複して解放操作を送ってしまう
+// おそれがあるため（表示が真実かどうか確認できない時は操作させない）。
+function renderMatrix(matrix, unlockAvailable) {
+  const theadRow1 = ['<tr><th class="mx-name-col"></th>' + matrix.groups.map((g, i) =>
+    `<th colspan="${g.quizzes.length}" class="mx-cat-${i % 4}">${escapeHtml(g.category)}</th>`).join('') + '</tr>'];
+  const theadRow2 = ['<tr><th class="mx-name-col">氏名</th>' + QUIZ_CATALOG.map(q =>
+    `<th>${escapeHtml(q.title)}<br><span class="mx-published">公開: ${escapeHtml(q.publishedDate || '不明')}</span></th>`).join('') + '</tr>'];
+  document.querySelector('#matrixTable thead').innerHTML = theadRow1.join('') + theadRow2.join('');
+
+  document.querySelector('#matrixTable tbody').innerHTML = matrix.rows.map(row => {
+    const cells = row.cells.map(c => {
+      const canClick = unlockAvailable && MX_CLICKABLE[c.status];
+      const clickable = canClick ? ' mx-clickable' : '';
+      const data = canClick
+        ? ` data-name="${escapeHtml(row.name)}" data-store="${escapeHtml(row.store)}" data-quizid="${escapeHtml(c.quizId)}" data-status="${c.status}"`
+        : '';
+      return `<td class="mx-cell ${MX_CLASS[c.status]}${clickable}"${data}>${MX_LABEL[c.status]}${c.dateStr ? `<small>${escapeHtml(c.dateStr)}</small>` : ''}</td>`;
+    }).join('');
+    return `<tr><td class="mx-name-col">${escapeHtml(row.name)}</td>${cells}</tr>`;
+  }).join('');
+}
+
+// --- 手動解放ログの取得・集計 ---
+async function fetchManualUnlockLog() {
+  const fields = ['氏名', '所属店舗', 'クイズID', '操作', '日時'];
+  let all = [];
+  let offset;
+  do {
+    const params = new URLSearchParams({ pageSize: '100' });
+    fields.forEach(f => params.append('fields[]', f));
+    if (offset) params.append('offset', offset);
+    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_MANUAL_UNLOCK_TABLE_NAME)}?${params.toString()}`;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_READONLY_TOKEN}` } });
+    if (!res.ok) throw new Error('status ' + res.status);
+    const data = await res.json();
+    all = all.concat((data.records || []).map(r => r.fields));
+    offset = data.offset;
+  } while (offset);
+  return all;
+}
+
+// (氏名|所属店舗|クイズID)ごとに一番新しいイベントだけを見て、「解放」なら解放中と判定する。
+function computeManualUnlockSet(records) {
+  const latestByKey = {};
+  records.forEach(r => {
+    if (!r['氏名'] || !r['クイズID']) return;
+    const key = (r['氏名'] || '') + '|' + (r['所属店舗'] || '') + '|' + (r['クイズID'] || '');
+    const prev = latestByKey[key];
+    if (!prev || (r['日時'] || '') > (prev['日時'] || '')) latestByKey[key] = r;
+  });
+  return new Set(Object.keys(latestByKey).filter(key => latestByKey[key]['操作'] === '解放'));
+}
+
+async function sendManualUnlockEvent(name, store, quizId, action) {
+  const res = await fetch(MANUAL_UNLOCK_WEBHOOK_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 合言葉: MANUAL_UNLOCK_SHARED_SECRET, 氏名: name, 所属店舗: store, クイズID: quizId, 操作: action, 日時: new Date().toISOString() }),
+  });
+  if (!res.ok) throw new Error('送信失敗: status ' + res.status);
+}
+
+document.querySelector('#matrixTable tbody').addEventListener('click', async (e) => {
+  const cell = e.target.closest('td.mx-clickable');
+  if (!cell) return;
+  const { name, store, quizid: quizId, status } = cell.dataset;
+  const quiz = QUIZ_CATALOG.find(q => q.quizId === quizId);
+  const title = quiz ? quiz.title : quizId;
+
+  if (status === 'none') {
+    if (!confirm(`${name}さんの「${title}」を手動で解放しますか？`)) return;
+    try {
+      await sendManualUnlockEvent(name, store, quizId, '解放');
+      await loadDashboard();
+    } catch (err) {
+      alert('解放に失敗しました：' + err.message);
+    }
+  } else if (status === 'unlocked') {
+    if (!confirm(`${name}さんの「${title}」の解放を取り消しますか？`)) return;
+    try {
+      await sendManualUnlockEvent(name, store, quizId, '取消');
+      await loadDashboard();
+    } catch (err) {
+      alert('取り消しに失敗しました：' + err.message);
+    }
+  }
+});
+
+// ============================================================
+// 実行チェック（現場でできているかの確認）
+// 書き込み：Make「Webhook→Filter(合言葉)→Airtable Create a Record」（テーブル「実行チェックログ」）
+// Webhook URLは、他のURLと同じくbase64にしてある（GitHubの自動検知を避けるためで、秘匿ではない）。
+// 空にすると、画面は開けるが、チェックの記録はできない（「セットアップ待ち」と表示）。
+// 読み取り：手動解放ログと同じく、読み取り専用トークンでAirtableを直接参照する。
+// ============================================================
+const PRACTICE_WEBHOOK_URL = atob("aHR0cHM6Ly9ob29rLnVzMi5tYWtlLmNvbS9yZ29xN2hjeGNndDF1M3dzOGRmNXJ1c296aHE3NnFtcA==");
+const PRACTICE_SHARED_SECRET = "9213";
+const PRACTICE_CHECKER_KEY = 'practiceChecker';
+
+let practiceState = {};        // computePracticeStateの結果（今の状態）
+let practiceReadable = true;   // 「実行チェックログ」を読めたか
+let practiceStaff = [];        // 一覧に出すスタッフ（staffSummaryの氏名・店舗）
+let practiceOpen = null;       // 今モーダルで開いている { name, store, quizId }
+
+async function fetchPracticeLog() {
+  const fields = ['氏名', '所属店舗', 'クイズID', '項目ID', '結果', '確認者', 'メモ', '日時'];
+  let all = [];
+  let offset;
+  do {
+    const params = new URLSearchParams({ pageSize: '100' });
+    fields.forEach(f => params.append('fields[]', f));
+    if (offset) params.append('offset', offset);
+    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(PRACTICE_TABLE_NAME)}?${params.toString()}`;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_READONLY_TOKEN}` } });
+    if (!res.ok) throw new Error('status ' + res.status);
+    const data = await res.json();
+    all = all.concat((data.records || []).map(r => r.fields));
+    offset = data.offset;
+  } while (offset);
+  return all;
+}
+
+async function sendPracticeEvent(payload) {
+  const res = await fetch(PRACTICE_WEBHOOK_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.assign({ 合言葉: PRACTICE_SHARED_SECRET }, payload)),
+  });
+  if (!res.ok) throw new Error('送信失敗: status ' + res.status);
+}
+
+function practiceNoteText() {
+  if (!practiceReadable) return '「実行チェックログ」のテーブルがAirtableに見つからないため、この機能はまだ使えません（セットアップ待ち）。';
+  if (!PRACTICE_WEBHOOK_URL) return 'チェックの記録用のWebhookがまだ設定されていません（セットアップ待ち）。現在は表示だけできます。';
+  return '';
+}
+
+function renderPracticeTable() {
+  const note = document.getElementById('practiceNote');
+  const text = practiceNoteText();
+  note.textContent = text;
+  note.style.display = text ? 'block' : 'none';
+
+  document.querySelector('#practiceTable thead').innerHTML =
+    '<tr><th class="pc-name-col">氏名</th>' + PRACTICE_CHECKLIST.map(q => `<th>${escapeHtml(q.title)}</th>`).join('') + '<th class="num">全項目できた</th></tr>';
+
+  const canOpen = practiceReadable;
+  const summary = practiceSummary(practiceState, practiceStaff, PRACTICE_CHECKLIST);
+  document.querySelector('#practiceTable tbody').innerHTML = summary.map(row => {
+    const cells = row.per.map((p, i) => {
+      const cls = p.complete ? 'pc-all' : (p.done > 0 ? 'pc-part' : 'pc-none');
+      const q = PRACTICE_CHECKLIST[i];
+      const data = canOpen ? ` data-name="${escapeHtml(row.name)}" data-store="${escapeHtml(row.store)}" data-quizid="${escapeHtml(q.quizId)}"` : '';
+      return `<td class="pc-cell ${cls}${canOpen ? ' pc-clickable' : ''}"${data}>${p.done} / ${p.total}</td>`;
+    }).join('');
+    return `<tr><td class="pc-name-col">${escapeHtml(row.name)}</td>${cells}<td class="num">${row.completeQuizzes} / ${PRACTICE_CHECKLIST.length}</td></tr>`;
+  }).join('');
+}
+
+function formatPracticeMeta(s) {
+  if (!s) return '未確認';
+  const d = s.at ? new Date(s.at) : null;
+  const when = d && !isNaN(d.getTime()) ? `${d.getMonth() + 1}/${d.getDate()}` : '';
+  return [when, s.checker ? `${s.checker}さん` : '', s.memo].filter(Boolean).join('・') || '確認済み';
+}
+
+function renderPracticeModal() {
+  if (!practiceOpen) return;
+  const { name, store, quizId } = practiceOpen;
+  const quiz = PRACTICE_CHECKLIST.find(q => q.quizId === quizId);
+  const prog = practiceProgress(practiceState, name, store, quiz);
+  document.getElementById('practiceTitle').textContent = `${name}さん ／ ${quiz.title}`;
+  document.getElementById('practiceSub').textContent = `${prog.done} / ${prog.total} 項目できた`;
+  const canWrite = !!PRACTICE_WEBHOOK_URL;
+  document.getElementById('practiceItems').innerHTML = quiz.items.map(item => {
+    const st = practiceState[practiceKey(name, store, quizId, item.id)];
+    const ok = st && st.result === 'できた';
+    const ng = st && st.result === 'まだ';
+    return `<div class="pc-item">
+      <div class="pc-item-text">${escapeHtml(item.text)}</div>
+      <div class="pc-item-btns">
+        <button class="pc-btn${ok ? ' on-ok' : ''}" data-item="${item.id}" data-result="できた"${canWrite ? '' : ' disabled'}>✓ できた</button>
+        <button class="pc-btn${ng ? ' on-ng' : ''}" data-item="${item.id}" data-result="まだ"${canWrite ? '' : ' disabled'}>まだ</button>
+        <span class="pc-meta">${escapeHtml(formatPracticeMeta(st))}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setPracticeMsg(text) {
+  const el = document.getElementById('practiceMsg');
+  el.textContent = text || '';
+  el.style.display = text ? 'block' : 'none';
+}
+
+function openPracticeModal(name, store, quizId) {
+  practiceOpen = { name, store, quizId };
+  let saved = '';
+  try { saved = localStorage.getItem(PRACTICE_CHECKER_KEY) || ''; } catch (e) {}
+  document.getElementById('practiceChecker').value = saved;
+  document.getElementById('practiceMemo').value = '';
+  setPracticeMsg('');
+  renderPracticeModal();
+  document.getElementById('practiceModal').classList.add('open');
+}
+
+function closePracticeModal() {
+  practiceOpen = null;
+  document.getElementById('practiceModal').classList.remove('open');
+}
+
+document.getElementById('practiceClose').addEventListener('click', closePracticeModal);
+document.getElementById('practiceModal').addEventListener('click', (e) => { if (e.target.id === 'practiceModal') closePracticeModal(); });
+
+document.querySelector('#practiceTable tbody').addEventListener('click', (e) => {
+  const cell = e.target.closest('td.pc-clickable');
+  if (!cell) return;
+  openPracticeModal(cell.dataset.name, cell.dataset.store, cell.dataset.quizid);
+});
+
+document.getElementById('practiceItems').addEventListener('click', async (e) => {
+  const btn = e.target.closest('button.pc-btn');
+  if (!btn || !practiceOpen || !PRACTICE_WEBHOOK_URL) return;
+  const checker = document.getElementById('practiceChecker').value.trim();
+  if (!checker) { setPracticeMsg('「確認した人」の名前を入れてください（誰が見て確認したかを残すため）'); return; }
+  try { localStorage.setItem(PRACTICE_CHECKER_KEY, checker); } catch (err) {}
+  const { name, store, quizId } = practiceOpen;
+  const quiz = PRACTICE_CHECKLIST.find(q => q.quizId === quizId);
+  const item = quiz.items.find(i => i.id === btn.dataset.item);
+  const memo = document.getElementById('practiceMemo').value.trim();
+  setPracticeMsg('');
+  const buttons = document.querySelectorAll('#practiceItems button.pc-btn');
+  buttons.forEach(b => { b.disabled = true; });
+  try {
+    const event = buildPracticeEvent(name, store, quiz, item, btn.dataset.result, checker, memo);
+    await sendPracticeEvent(event);
+    // 送信できたら、画面の状態にも先に反映する（Airtableへの反映を待たずに見えるように）
+    practiceState[practiceKey(name, store, quizId, item.id)] = { result: event.結果, checker, memo, at: event.日時 };
+    document.getElementById('practiceMemo').value = '';
+    renderPracticeModal();
+    renderPracticeTable();
+  } catch (err) {
+    setPracticeMsg('記録に失敗しました：' + err.message);
+    buttons.forEach(b => { b.disabled = false; });
+  }
+});
+
+async function loadDashboard() {
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('errorBox').style.display = 'none';
+  try {
+    const all = await fetchAllRecords();
+    const records = all.filter(r => r['正答数'] != null && r['総問題数'] > 0);
+    allRecords = records;
+
+    const staffSummary = buildStaffSummary(records);
+    const weakness = buildWeaknessAnalysis(records);
+    const { pairs, orphanStarts } = pairAttempts(all);
+    const dropoffStats = buildDropoffStats(pairs, orphanStarts, records.length);
+
+    // 「手動解放ログ」テーブルはまだAirtable側に無い可能性がある（Takeshiのセットアップ待ち）。
+    // 取得できなくても、単に手動解放機能が使えないだけでダッシュボード全体は壊さない。
+    let manualUnlockSet = new Set();
+    let manualUnlockAvailable = true;
+    try {
+      manualUnlockSet = computeManualUnlockSet(await fetchManualUnlockLog());
+    } catch (e) {
+      manualUnlockAvailable = false;
+      console.warn('[ダッシュボード] 「手動解放ログ」テーブルが見つからないため、手動解放機能は無効化されます:', e.message);
+    }
+
+    const matrix = buildMatrix(records, orphanStarts, manualUnlockSet, staffSummary);
+
+    allPairs = pairs;
+    allOrphans = orphanStarts;
+    allRaw = all;
+    staffSummaryMap = {};
+    staffSummary.forEach(s => { staffSummaryMap[s.name + '|' + s.store] = s; });
+
+    renderStats(staffSummary, records, dropoffStats);
+    renderStaffTable(staffSummary);
+    renderWeaknessTable(weakness);
+    renderDropoffTable(dropoffStats.confirmedDropoffs);
+    renderMatrix(matrix, manualUnlockAvailable);
+
+    // 「実行チェックログ」もまだAirtable側に無い可能性がある。読めなくてもダッシュボード全体は壊さない。
+    practiceStaff = staffSummary.map(s => ({ name: s.name, store: s.store }));
+    try {
+      practiceState = computePracticeState(await fetchPracticeLog());
+      practiceReadable = true;
+    } catch (e) {
+      practiceState = {};
+      practiceReadable = false;
+      console.warn('[ダッシュボード] 「実行チェックログ」テーブルが見つからないため、実行チェックは表示のみになります:', e.message);
+    }
+    renderPracticeTable();
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+  } catch (e) {
+    console.error('[ダッシュボード] 読み込み失敗:', e);
+    document.getElementById('loading').style.display = 'none';
+    const box = document.getElementById('errorBox');
+    box.textContent = 'データの読み込みに失敗しました：' + e.message;
+    box.style.display = 'block';
+  }
+}
+</script>
+
+</body>
+</html>
