@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>研修クイズ｜抱っこの仕方</title>
+<link rel="stylesheet" href="quiz-style.css">
+</head>
+<body>
+
+<div id="app"></div>
+
+<script src="quiz-engine.js"></script>
+<script>
+initQuiz({
+  quiz_id: "dakko-no-shikata",
+  hub_url: "index.html",
+  video_title: "抱っこの仕方",
+  category: "犬の扱い方",
+  source_url: "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/f450240d-7a49-4601-9df1-14f91e6c0774",
+  thumbnail: "images/dakko-no-shikata.jpg",
+  questions: [
+    {
+      q: "動画で一番最初に説明されていたステップは？",
+      choices: ["犬舎（ケージ）から犬を出す","胸の下を支える","お尻を支える","公式LINEに登録する"],
+      answer: 0,
+      explanation: "動画は犬舎から犬を出すところから始まる。"
+    },
+    {
+      q: "犬舎から犬を出すとき、扉についての注意点は？",
+      choices: ["扉を素早く大きく開ける","扉を開けすぎないようにする","扉は開けず隙間から手を入れる","扉を開ける前に犬におやつを見せる"],
+      answer: 1,
+      explanation: "「扉をパッと開けたりしないように」と説明され、飛び出し防止のポイントとしても強調されている。"
+    },
+    {
+      q: "動画中に出てくる1つ目の黄色い〈Point〉表示の内容として正しいのは？",
+      choices: ["飛び出さないように犬舎のドアを開きすぎない","胸の下とお尻をしっかり支える","おやつを見せてから抱っこする","犬の名前を呼んでから出す"],
+      answer: 0,
+      explanation: "1つ目のPointカードは扉の開け方について。2つ目（支え方）と混同しないよう注意。"
+    },
+    {
+      q: "犬舎から出すときに大事にすると説明されていたのは、犬をどんな状態にすることか？",
+      choices: ["犬が興奮する状態","犬が安心する状態","犬が眠る状態","犬が吠える状態"],
+      answer: 1,
+      explanation: "「ワンコが安心するように」という言い回しで説明されている。"
+    },
+    {
+      q: "犬を抱っこするとき、しっかり支えるべき2箇所はどこ？（2つ目のPointカードより）",
+      choices: ["首と尻尾","頭と背中","胸の下とお尻","前足と後ろ足"],
+      answer: 2,
+      explanation: "2つ目のPointカードと動画終盤のまとめスライドの両方で明示されている。"
+    },
+    {
+      q: "この動画中、黄色い〈Point〉表示は何回出てきた？",
+      choices: ["1回","2回","3回","4回"],
+      answer: 1,
+      explanation: "「扉の開け方」と「支える場所」の2つのPointカードが出てくる。動画を通しで見ていないと数えられない。"
+    },
+    {
+      q: "動画最後の「重要なポイントのおさらい」スライドで挙げられていた注意点はいくつ？",
+      choices: ["1つ","2つ","3つ","4つ"],
+      answer: 1,
+      explanation: "「犬舎のドアを開きすぎない」「胸の下とお尻をしっかり支える」の2点。動画中盤のPointカード2枚と同じ内容。"
+    },
+    {
+      q: "動画で説明されていた手順の流れとして正しいのはどれ？",
+      choices: [
+        "犬舎から出す → 扉を開けすぎない → 犬を安心させる → 抱えたらしっかり支える",
+        "抱えたらしっかり支える → 犬舎から出す → 扉を開けすぎない",
+        "犬を安心させる → 抱えたらしっかり支える → 犬舎から出す",
+        "扉を開けすぎない → 抱えたらしっかり支える → 犬舎から出す → 犬を安心させる"
+      ],
+      answer: 0,
+      explanation: "動画は「犬舎から出す→扉の開け方に注意→ワンコが安心するように→抱えた後にしっかり支える」の順で説明されている。"
+    }
+  ]
+});
+</script>
+
+</body>
+</html>
