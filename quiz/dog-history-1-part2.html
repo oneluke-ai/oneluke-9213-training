@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dog History 第一弾 Part2 クイズ</title>
+<link rel="stylesheet" href="quiz-style.css">
+</head>
+<body>
+<div id="app"></div>
+<script src="quiz-engine.js"></script>
+<script>
+initQuiz({
+  quiz_id: "dog-history-1-part2",
+  hub_url: "index.html",
+  video_title: "Dog History(福山先生)第一弾 Part2（9:10〜16:00）",
+  category: "特別セミナー",
+  source_url: "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/c26efb3c-8218-4619-af17-825ee124a09b",
+  thumbnail: "images/dog-history-1.jpg",
+  questions: [
+    {
+      q: "CFA（The Cat Fancier's Association）に登録されている猫種数は約何種と紹介されていた？",
+      choices: ["約30種", "約50種", "約70種", "約100種"],
+      answer: 1,
+      explanation: "「CFA（The Cat Fancier's Association）：約50種」と紹介されていた。"
+    },
+    {
+      q: "TICA（The International Cat Association）に登録されている猫種数は約何種と紹介されていた？",
+      choices: ["約30種", "約50種", "約70種", "約100種"],
+      answer: 2,
+      explanation: "「TICA（The International Cat Association）：約70種」と紹介されていた。"
+    },
+    {
+      q: "「ネコ（イエネコ）」の基本データとして紹介されていた体重は？",
+      choices: ["1〜2kg程度", "3〜5kg程度", "5〜8kg程度", "8〜10kg程度"],
+      answer: 1,
+      explanation: "「体重　3〜5kg程度」と紹介されていた。"
+    },
+    {
+      q: "イエネコの耳の形状・換毛の特徴として紹介されていたのは？",
+      choices: [
+        "立耳・季節性の明確な換毛期がある",
+        "垂れ耳・換毛期は無い",
+        "立耳・換毛期は無い",
+        "垂れ耳・季節性の換毛期がある"
+      ],
+      answer: 0,
+      explanation: "「立耳」「季節性の明確な換毛期がある」と紹介されていた。"
+    },
+    {
+      q: "「形態変化（身体変化）」のスライドで、暑い地域向けに犬の体型が細長く変化する法則として紹介されていたのは？",
+      choices: ["アレンの法則", "ベルクマンの法則", "メンデルの法則", "ダーウィンの法則"],
+      answer: 0,
+      explanation: "「Allen JA(1877)」の方向として、暑い地域向けの細長い体型（サルーキ系）が紹介されていた。"
+    },
+    {
+      q: "同じスライドで、寒い地域向けに犬の体型がずんぐり変化する法則として紹介されていたのは？",
+      choices: ["アレンの法則", "ベルクマンの法則", "メンデルの法則", "ダーウィンの法則"],
+      answer: 1,
+      explanation: "「Bergman C(1847)」の方向として、寒い地域向けのずんぐりした体型（サモエド・ハスキー系）が紹介されていた。"
+    },
+    {
+      q: "「形態変化（身体変化）」の根本原因として紹介されていたのは？",
+      choices: [
+        "環境適応（自然淘汰）",
+        "人為的な品種改良のみ",
+        "偶然の突然変異のみ",
+        "特に理由は無い"
+      ],
+      answer: 0,
+      explanation: "「環境適応（自然淘汰）」がディンゴから2方向への体型変化の根本原因として紹介されていた。"
+    }
+  ]
+});
+</script>
+</body>
+</html>
