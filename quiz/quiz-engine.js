@@ -445,6 +445,37 @@ const FAIL_MESSAGES = [
   "焦らなくて大丈夫。動画を見直してからもう一度チャレンジしましょう",
 ];
 
+// ============================================================
+// 動画リンク（店舗別）：video-links.js がある店舗だけ、YouTubeのボタンを出す（2026-10-09）
+// ・video-links.js が無い／youtubeEnabled が false → 今までどおり（ワンストリームのボタンだけ）
+// ・youtubeEnabled が true：「動画を見る（ワンストリーム）」「動画を見る（YouTube）」の2段。
+//   YouTubeのURLが未登録のクイズは「YouTube動画：後日公開予定」と表示する。
+// ============================================================
+function loadVideoLinks() {
+  return new Promise(resolve => {
+    if (window.VIDEO_LINKS) { resolve(); return; }
+    const s = document.createElement('script');
+    s.src = 'video-links.js';
+    s.onload = () => resolve();
+    s.onerror = () => resolve(); // 無い店舗は、何もしない
+    document.head.appendChild(s);
+  });
+}
+function renderYoutubeRow(config) {
+  const row = document.getElementById('youtubeRow');
+  const cfg = window.VIDEO_LINKS_CONFIG;
+  if (!row || !cfg || !cfg.youtubeEnabled) return;
+  const one = document.getElementById('onestreamLink');
+  if (one) one.textContent = '▶ 動画を見る（ワンストリーム）';
+  const e = (window.VIDEO_LINKS || []).find(v => v.quizId && v.quizId === config.quiz_id);
+  if (e && e.youtube) {
+    row.innerHTML = `<a href="${escapeHtml(e.youtube)}" target="_blank" rel="noopener" class="hub-link yt-link" style="display:inline-block;">▶ 動画を見る（YouTube）</a>`
+      + (e.note ? `<div class="video-note">${escapeHtml(e.note)}</div>` : '');
+  } else {
+    row.innerHTML = `<span class="yt-soon">YouTube動画：後日公開予定</span>`;
+  }
+}
+
 function initQuiz(config) {
   // 選択肢の並び順を毎回シャッフルする（正解の位置に偏りがあると、内容を覚えていなくても
   // 「いつも2番目を選ぶ」で合格できてしまうため）。表示用の配列を作るだけで、元データは変えない。
@@ -494,7 +525,8 @@ function initQuiz(config) {
       <div class="video-info" style="text-align:center;">
         <div class="node-cat" style="margin-bottom:6px;">${escapeHtml(config.category || '')}</div>
         <div style="font-weight:700; font-size:16px; margin-bottom:8px;">${escapeHtml(config.video_title)}</div>
-        <a href="${escapeHtml(config.source_url)}" target="_blank" class="hub-link" style="display:inline-block; margin:4px 0 12px;">▶ 動画を見る</a>
+        <a id="onestreamLink" href="${escapeHtml(config.source_url)}" target="_blank" class="hub-link" style="display:inline-block; margin:4px 0 4px;">▶ 動画を見る</a>
+        <div id="youtubeRow" style="margin:0 0 12px;"></div>
         <p style="margin:0;">この動画の内容を確認しましたか？</p>
         <div class="status-chip" style="display:inline-flex; margin-top:10px;">🎯 目標：${questions.length}問中${Math.ceil(questions.length * PASS_THRESHOLD)}問以上正解</div>
       </div>
@@ -543,6 +575,7 @@ function initQuiz(config) {
   const nameScreen = document.getElementById('nameScreen');
   const profileBar = document.getElementById('profileBar');
   const videoConfirmScreen = document.getElementById('videoConfirmScreen');
+  loadVideoLinks().then(() => renderYoutubeRow(config));
   const quizEl = document.getElementById('quiz');
   const progressTrack = document.getElementById('progressTrack');
   const submitBtnWrap = document.getElementById('submitBtnWrap');
