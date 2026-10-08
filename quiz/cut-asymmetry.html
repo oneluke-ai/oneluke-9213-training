@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>研修クイズ｜カット動画②アシンメトリーカット</title>
+<link rel="stylesheet" href="quiz-style.css">
+</head>
+<body>
+
+<div id="app"></div>
+
+<script src="quiz-engine.js"></script>
+<script>
+initQuiz({
+  quiz_id: "cut-asymmetry",
+  hub_url: "index.html",
+  video_title: "カット動画②アシンメトリーカット",
+  category: "カット",
+  source_url: "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/9426d30f-4225-434d-b03a-9507a01f11bc",
+  questions: [
+    {
+      q: "アシンメトリー（アシメ）カットは、どんなカットだと説明されていた？",
+      choices: ["マッシュとモヒカンのちょうど中間", "テディベアより丸みを強くしたカット", "マッシュとテディのちょうど中間", "プードルマズルを短くしたカット"],
+      answer: 2,
+      explanation: "「マッシュとテディのちょうど中間」「中間のカットになります」と説明されている。"
+    },
+    {
+      q: "切り始める側について、動画ではどう説明していた？",
+      choices: ["必ず右側面から切る", "右左どちらでもいい。動画ではワンちゃんの左側面から", "必ず正面から切る", "後頭部から切ってから側面に移る"],
+      answer: 1,
+      explanation: "「右左どちらでもいいんですけど」と話し、「ワンちゃんの左側面ですね」と左側から切っている。"
+    },
+    {
+      q: "片側のラインを切る前に、確認していたのは？",
+      choices: ["耳の位置", "目の位置", "鼻の高さ", "首の長さ"],
+      answer: 0,
+      explanation: "「耳の位置を確認して」と説明されている。"
+    },
+    {
+      q: "片側のラインは、どこにつなげていくと説明されていた？",
+      choices: ["同じ側の耳の前", "後頭部の真ん中", "マズルの付け根", "反対の耳の後ろ"],
+      answer: 3,
+      explanation: "「反対の耳の後ろにつなげていく」と説明されている。左右で長さが違うラインになり、これがアシンメトリーになる。"
+    },
+    {
+      q: "アシンメトリーにすると、何をより強調できると説明されていた？",
+      choices: ["毛の色", "目の大きさ", "陰影", "毛の量"],
+      answer: 2,
+      explanation: "「アシンメトリーをね」「より」「陰影をね」「しっかりと強調することができます」と説明されている。"
+    },
+    {
+      q: "仕上がりの印象として、動画で説明されていたのは？",
+      choices: ["顔面がすっきりめのテディベア", "丸みがより見えるマッシュルーム", "頭の真ん中だけ高いモヒカン", "顔まわりがふんわり大きいテディベア"],
+      answer: 0,
+      explanation: "「わりかしすっきりめの」「顔面がすっきりめのテディベア」と説明されている。丸みが見えるのはカット動画①のマッシュルームカット。"
+    }
+  ]
+});
+</script>
+
+</body>
+</html>
