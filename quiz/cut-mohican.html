@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>研修クイズ｜カット動画③モヒカンカット</title>
+<link rel="stylesheet" href="quiz-style.css">
+</head>
+<body>
+
+<div id="app"></div>
+
+<script src="quiz-engine.js"></script>
+<script>
+initQuiz({
+  quiz_id: "cut-mohican",
+  hub_url: "index.html",
+  video_title: "カット動画③モヒカンカット",
+  category: "カット",
+  source_url: "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/e715579a-f623-4ebc-ac1e-b4167d0a13a8",
+  questions: [
+    {
+      q: "モヒカンカットで、毛はどの方向に向かって（伸ばす）と字幕で説明されていた？",
+      choices: ["外側に向かって", "中央に向かって", "下に向かって", "後ろに向かって"],
+      answer: 1,
+      explanation: "「中央に向かって」「伸ばします」と字幕で説明されている。頭の真ん中を高く残すのがモヒカン。"
+    },
+    {
+      q: "続けて、何の位置を確認していた？",
+      choices: ["目の位置", "鼻の位置", "耳付きの位置", "首の付け根の位置"],
+      answer: 2,
+      explanation: "「で耳付きの位置を確認して」と説明されている。カット動画②アシンメトリーでも「耳の位置を確認して」からラインを決めていた。"
+    },
+    {
+      q: "動画の終盤に映っていた、モヒカンカットの実際の犬の仕上がり写真は？",
+      choices: ["グレーの犬で、頭の真ん中が高く立っている", "白い犬で、顔まわりが丸い", "アプリコットの犬で、耳が短い", "黒い犬で、全身が短く刈られている"],
+      answer: 0,
+      explanation: "終盤にグレーの犬の写真が映り、頭の真ん中が高く立ったモヒカンの形になっている。白い犬はその次の「テディベアカットへ続きます」の画面。"
+    },
+    {
+      q: "動画の最後に表示されていた案内は？",
+      choices: ["カット動画①マッシュルームカットへ戻ります", "この動画はカット動画④テディベアカットへ続きます", "次はアシメカット総合をご覧ください", "練習の宿題を提出してください"],
+      answer: 1,
+      explanation: "最後に「この動画は カット動画④テディベアカット へ続きます」と表示され、そのあと公式LINEのQRコードが出る。"
+    }
+  ]
+});
+</script>
+
+</body>
+</html>
