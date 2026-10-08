@@ -688,3 +688,20 @@ h1, .display {
 .cat-cut { background: var(--brand-tiffany); }
 .cat-groomer { background: var(--green-deep); }
 .cat-seminar { background: var(--purple); }
+
+
+/* ---- 動画リンク（YouTube）2026-10-09 ---- */
+#videoConfirmScreen .yt-link { color: #d62d20; }
+#videoConfirmScreen .yt-link:hover { color: #b3231a; }
+.video-note { font-size: 12px; color: var(--ink-soft); margin-top: 6px; line-height: 1.5; }
+.yt-soon { display: inline-block; font-size: 13px; color: var(--muted); border: 1px dashed var(--card-line); border-radius: 999px; padding: 5px 12px; }
+/* 研修動画一覧ページ */
+.vl-cat { font-family: "Fredoka", sans-serif; font-weight: 600; color: var(--tiffany-deep); margin: 26px 0 10px; font-size: 17px; }
+.vl-card { background: var(--card); border: 1px solid var(--card-line); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; box-shadow: 0 6px 20px -16px hsl(var(--shadow) / 0.4); }
+.vl-title { font-weight: 700; font-size: 15px; margin-bottom: 8px; }
+.vl-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.vl-btn { display: inline-block; text-decoration: none; font-weight: 700; font-size: 13.5px; padding: 8px 14px; border-radius: 999px; border: 1px solid transparent; }
+.vl-btn.os { background: var(--orange-tint); color: var(--orange-deep); }
+.vl-btn.yt { background: #fde4e1; color: #d62d20; }
+.vl-btn.quiz { background: var(--tiffany-tint); color: var(--tiffany-deep); }
+.vl-tag { font-size: 12px; color: var(--muted); align-self: center; }
