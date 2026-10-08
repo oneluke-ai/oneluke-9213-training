@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>研修動画一覧</title>
+<link rel="stylesheet" href="quiz-style.css">
+</head>
+<body>
+<div class="brand-row"><h1>研修動画一覧</h1></div>
+<p class="sub" id="lead">見たい動画を選んでください。ワンストリームに入れない場合は、YouTubeで見られます。</p>
+<div id="topLinks" style="margin:10px 0 4px;"></div>
+<div id="list"></div>
+<p class="sub" style="margin-top:24px;"><a class="hub-link" href="index.html">→ 研修クイズ一覧へ</a></p>
+<script src="video-links.js"></script>
+<script>
+(function () {
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const cfg = window.VIDEO_LINKS_CONFIG || {};
+  const list = window.VIDEO_LINKS || [];
+  if (cfg.onestreamTop) {
+    document.getElementById('topLinks').innerHTML =
+      '<a class="vl-btn os" href="' + esc(cfg.onestreamTop) + '" target="_blank" rel="noopener">▶ ワンストリームのトップページ</a>';
+  }
+  const order = cfg.categories || [];
+  const cats = [];
+  list.forEach(v => { if (cats.indexOf(v.category) < 0) cats.push(v.category); });
+  cats.sort((a, b) => (order.indexOf(a) < 0 ? 99 : order.indexOf(a)) - (order.indexOf(b) < 0 ? 99 : order.indexOf(b)));
+  let html = '';
+  cats.forEach(cat => {
+    html += '<div class="vl-cat">' + esc(cat) + '</div>';
+    list.filter(v => v.category === cat).forEach(v => {
+      let btns = '';
+      if (v.onestream) btns += '<a class="vl-btn os" href="' + esc(v.onestream) + '" target="_blank" rel="noopener">▶ ワンストリーム</a>';
+      if (v.youtube) btns += '<a class="vl-btn yt" href="' + esc(v.youtube) + '" target="_blank" rel="noopener">▶ YouTube</a>';
+      else btns += '<span class="vl-tag">YouTube：後日公開予定</span>';
+      if (v.quizId) btns += '<a class="vl-btn quiz" href="' + esc(v.quizId) + '.html">クイズへ</a>';
+      else if (v.quizPending) btns += '<span class="vl-tag">クイズ：準備中</span>';
+      html += '<div class="vl-card"><div class="vl-title">' + esc(v.title) + '</div><div class="vl-btns">' + btns + '</div>'
+        + (v.note ? '<div class="video-note">' + esc(v.note) + '</div>' : '') + '</div>';
+    });
+  });
+  document.getElementById('list').innerHTML = html;
+})();
+</script>
+</body>
+</html>
