@@ -434,6 +434,11 @@ const MANUAL_UNLOCK_SHARED_SECRET = "9213";
 
 let currentPassword = null; // 取得できるまでは、いかなる入力も拒否する（下のtryUnlock参照）
 let allRecords = []; // スタッフ詳細モーダル用に、読み込んだ受講記録を保持しておく
+// 数字に含めない名前（事務局＝テスト用など）。純粋な店舗スタッフ・オーナーだけで計測・報告する（2026-10-09 Takeshi指定）。
+// URLの末尾に ?all=1 を付けると、全員を含めて表示する（事務局の確認・手動解放の取り消し用）。
+const DASHBOARD_EXCLUDE_NAMES = ['事務局'];
+const DASHBOARD_SHOW_ALL = new URLSearchParams(location.search).get('all') === '1';
+function isExcludedName(n) { return !DASHBOARD_SHOW_ALL && DASHBOARD_EXCLUDE_NAMES.indexOf(String(n || '').trim()) >= 0; }
 let allPairs = [];   // 「開始→完了」のペア（pairAttemptsの結果）。所要時間の計算用に保持
 let allOrphans = [];  // ペアにならなかった「開始」（＝離脱候補）。モーダルの離脱内訳用に保持
 let allRaw = [];      // Airtableから取得した生の全レコード（ステータス「開始」「完了」両方含む）
@@ -664,6 +669,7 @@ function buildStaffSummary(records) {
   STORE_OPTIONS.forEach(storeInfo => {
     const store = storeInfo.name;
     (STAFF_BY_STORE[store] || []).forEach(name => {
+      if (isExcludedName(name)) return;
       const key = name + '|' + store;
       if (!groups[key]) groups[key] = { name, store, records: [] };
     });
@@ -1289,7 +1295,7 @@ async function loadDashboard() {
   document.getElementById('loading').style.display = 'block';
   document.getElementById('errorBox').style.display = 'none';
   try {
-    const all = await fetchAllRecords();
+    const all = (await fetchAllRecords()).filter(r => !isExcludedName(r['受講者名']));
     const records = all.filter(r => r['正答数'] != null && r['総問題数'] > 0);
     allRecords = records;
 
