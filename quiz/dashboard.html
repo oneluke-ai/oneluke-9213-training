@@ -275,6 +275,7 @@
     <div class="pw-body">
       <input type="password" id="pwNew1" placeholder="新しいパスワード">
       <input type="password" id="pwNew2" placeholder="新しいパスワード（確認）">
+      <input type="password" id="pwAdminCode" placeholder="変更の許可コード（管理者に確認してください）" style="display:none;">
       <button class="btn" id="pwSaveBtn">保存</button>
     </div>
     <div id="pwMsg"></div>
@@ -421,6 +422,8 @@ const UNLOCK_KEY = 'dashboardUnlocked';
 // パスワード変更フォームの送信先（Make: Webhook→Filter(合言葉)→Airtable Update a Record）
 const PW_CHANGE_WEBHOOK_URL = atob("aHR0cHM6Ly9ob29rLnVzMi5tYWtlLmNvbS9zZWVxbDRjcnpmOHd4c3hyZ3Y4cXFrNGdybnYxc3dhdw==");
 const PW_CHANGE_SHARED_SECRET = "9213";
+// true の店舗は、「許可コード」が合わないと、パスワードを変更できない。判定はMake側で行う（許可コードは、この公開ページには入っていない）。
+const PW_CHANGE_REQUIRE_CODE = true;
 
 // 手動解放（受講マトリクスからの解放・取消）の送信先。
 // Make: Webhook→Filter(合言葉)→Airtable Create a Record（テーブル「手動解放ログ」）
@@ -549,11 +552,14 @@ function showPwMsg(text, ok) {
   box.style.display = 'block';
 }
 
+if (PW_CHANGE_REQUIRE_CODE) document.getElementById('pwAdminCode').style.display = '';
 document.getElementById('pwSaveBtn').onclick = async () => {
   const p1 = document.getElementById('pwNew1').value;
   const p2 = document.getElementById('pwNew2').value;
   if (p1.length < 4) { showPwMsg('4文字以上で入力してください', false); return; }
   if (p1 !== p2) { showPwMsg('2つの入力が一致しません', false); return; }
+  const adminCode = document.getElementById('pwAdminCode').value;
+  if (PW_CHANGE_REQUIRE_CODE && !adminCode) { showPwMsg('変更の許可コードを入力してください', false); return; }
 
   const btn = document.getElementById('pwSaveBtn');
   btn.disabled = true;
@@ -561,13 +567,25 @@ document.getElementById('pwSaveBtn').onclick = async () => {
     const res = await fetch(PW_CHANGE_WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 合言葉: PW_CHANGE_SHARED_SECRET, 新パスワード: p1 }),
+      body: JSON.stringify({ 合言葉: PW_CHANGE_SHARED_SECRET, 新パスワード: p1, 承認コード: adminCode }),
     });
     if (!res.ok) throw new Error('送信失敗: status ' + res.status);
-    currentPassword = p1;
-    document.getElementById('pwNew1').value = '';
-    document.getElementById('pwNew2').value = '';
-    showPwMsg('変更しました。次回からこのパスワードでログインできます。', true);
+    // Make側が許可コードを確かめてからAirtableを書き換える。実際に変わったかを、取り直して確かめる（最大約16秒）
+    let changed = false;
+    for (let i = 0; i < 8 && !changed; i++) {
+      await new Promise(r => setTimeout(r, 2000));
+      const now = await fetchCurrentPassword();
+      if (now === p1) changed = true;
+    }
+    document.getElementById('pwAdminCode').value = '';
+    if (changed) {
+      currentPassword = p1;
+      document.getElementById('pwNew1').value = '';
+      document.getElementById('pwNew2').value = '';
+      showPwMsg('変更しました。次回からこのパスワードでログインできます。', true);
+    } else {
+      showPwMsg('変更できませんでした。許可コードが違う可能性があります。パスワードは変わっていません。', false);
+    }
   } catch (e) {
     console.error('[パスワード変更] 失敗:', e);
     showPwMsg('変更に失敗しました。時間をおいて再度お試しください。', false);
