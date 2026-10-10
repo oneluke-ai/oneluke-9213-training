@@ -291,7 +291,7 @@
         <thead>
           <tr>
             <th>氏名</th><th>店舗</th><th class="num">完了数</th><th class="num">平均正答率</th>
-            <th class="num">連続記録</th><th class="num">合計pt</th><th>最終受講</th><th>状態</th>
+            <th class="num">連続記録</th><th class="num">合計pt</th><th>最終受講</th><th>状態</th><th>LINE連携</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -763,6 +763,34 @@ function renderStats(staffSummary, records, dropoffStats) {
   `).join('');
 }
 
+// --- LINE連携の状況（テーブル「スタッフLINE連携」から、氏名と店舗だけを取得する。LINEのIDは取得しない） ---
+let lineLinkedSet = new Set();
+let lineLinkReadable = false;
+async function fetchLineLinkedSet() {
+  const fields = ['氏名', '所属店舗'];
+  let all = [];
+  let offset;
+  do {
+    const params = new URLSearchParams({ pageSize: '100' });
+    fields.forEach(f => params.append('fields[]', f));
+    if (offset) params.append('offset', offset);
+    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent('スタッフLINE連携')}?${params.toString()}`;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_READONLY_TOKEN}` } });
+    if (!res.ok) throw new Error('status ' + res.status);
+    const data = await res.json();
+    all = all.concat((data.records || []).map(r => r.fields));
+    offset = data.offset;
+  } while (offset);
+  return new Set(all.filter(r => r['氏名']).map(r => (r['氏名'] || '') + '|' + (r['所属店舗'] || '')));
+}
+
+function lineLinkedPill(name, store) {
+  if (!lineLinkReadable) return '<span class="pill pill-muted">—</span>';
+  return lineLinkedSet.has(name + '|' + store)
+    ? '<span class="pill pill-ok">✅連携済み</span>'
+    : '<span class="pill pill-muted">未連携</span>';
+}
+
 function renderStaffTable(staffSummary) {
   const tbody = document.querySelector('#staffTable tbody');
   tbody.innerHTML = staffSummary.map(s => `
@@ -775,6 +803,7 @@ function renderStaffTable(staffSummary) {
       <td class="num">⭐${s.xp}</td>
       <td>${s.lastDate || '—'}</td>
       <td>${statusPill(s.daysSince)}</td>
+      <td>${lineLinkedPill(s.name, s.store)}</td>
     </tr>
   `).join('');
 }
@@ -1322,6 +1351,16 @@ async function loadDashboard() {
     allRaw = all;
     staffSummaryMap = {};
     staffSummary.forEach(s => { staffSummaryMap[s.name + '|' + s.store] = s; });
+
+    // LINE連携の状況。読めなくても、ダッシュボード全体は壊さない（列は「—」になる）
+    try {
+      lineLinkedSet = await fetchLineLinkedSet();
+      lineLinkReadable = true;
+    } catch (e) {
+      lineLinkedSet = new Set();
+      lineLinkReadable = false;
+      console.warn('[ダッシュボード] 「スタッフLINE連携」を読めないため、LINE連携の列は表示のみになります:', e.message);
+    }
 
     renderStats(staffSummary, records, dropoffStats);
     renderStaffTable(staffSummary);
