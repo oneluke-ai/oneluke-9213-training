@@ -954,27 +954,90 @@ function isPerfectCleared(quizId) {
 // カテゴリごとに「直前の1本をクリアするまで次は挑戦不可」。管理者が手動解放したものは例外として開く。
 // 判定はファイル名（拡張子なし）＝各クイズのquiz_idで行う。
 // ============================================================
+// ------------------------------------------------------------
+// 【石神井公園駅店だけの「見る順番」ルール】（2026-10-10）
+// 研修動画の配信元の方針：先生のセミナー（福山先生・丹下さん）を最初に見てもらう。
+//   ① 「特別セミナー」を、すべてクリアするまで、ほかのカテゴリのクイズは開かない。
+//   ② セミナーは2つの系列（tracks）を、同時並行で進められる（系列どうしに順番はない）。
+//      各系列の中は、書いた順に、前をクリアすると次が開く。
+//   ③ セミナーをすべてクリアしたあとは、今までどおり（カテゴリごとに、前の1本をクリアすると次が開く）。
+//   ④ 管理ダッシュボードからの手動解放は、これまでどおり、すべての鍵に優先する。
+// 新しい特別セミナーを足すときは、該当する系列の最後にクイズIDを足す（足し忘れても、カテゴリ内の順番待ちで動く）。
+// このブロックを削除すれば、元（亀戸店と同じ）の動きに戻る。
+// ------------------------------------------------------------
+const TRAINING_ORDER = {
+  gateCategory: '特別セミナー',
+  tracks: [
+    // 系列A：Dog History → Dog Stress Master → Dog Wellness Master（福山先生）
+    ['dog-history-1-part1', 'dog-history-1-part2', 'dog-history-1-part3',
+     'dog-stress-master-2-part1', 'dog-stress-master-2-part2', 'dog-stress-master-2-part3',
+     'dog-wellness-master-3'],
+    // 系列B：やさしさGrooming 第一弾①②③ → 第二弾
+    ['yasashisa-grooming-1-1-part1', 'yasashisa-grooming-1-1-part2', 'yasashisa-grooming-1-1-part3',
+     'yasashisa-grooming-1-2-part1', 'yasashisa-grooming-1-2-part2', 'yasashisa-grooming-1-2-part3',
+     'yasashisa-grooming-1-3-part1', 'yasashisa-grooming-1-3-part2',
+     'yasashisa-grooming-2-part1', 'yasashisa-grooming-2-part2', 'yasashisa-grooming-2-part3'],
+  ],
+};
+
 function computeQuizStates(quizzes) {
+  const T = (typeof TRAINING_ORDER !== 'undefined') ? TRAINING_ORDER : null;
+  const idOf = q => q.file.replace(/\.html$/, '');
+  const titleById = {};
+  quizzes.forEach(q => { titleById[idOf(q)] = q.title; });
+
+  // 「見る順番」ルールの下準備（ルールがない店舗では、何もしない）
+  const trackPrev = {};   // クイズID → 同じ系列の1つ前のID（先頭はnull）
+  const seminarRank = {}; // 「続きから」の優先順（系列を交互に並べる）
+  let gateRemaining = 0;
+  if (T) {
+    T.tracks.forEach(t => t.forEach((id, i) => { trackPrev[id] = i > 0 ? t[i - 1] : null; }));
+    const longest = Math.max(...T.tracks.map(t => t.length));
+    let r = 0;
+    for (let i = 0; i < longest; i++) T.tracks.forEach(t => { if (i < t.length) seminarRank[t[i]] = r++; });
+    gateRemaining = quizzes.filter(q => q.category === T.gateCategory && !isCleared(idOf(q))).length;
+  }
+
   const lastClearedInCategory = {};
-  return quizzes.map(quiz => {
-    const quizId = quiz.file.replace(/\.html$/, '');
+  return quizzes.map((quiz, idx) => {
+    const quizId = idOf(quiz);
     const cleared = isCleared(quizId);
-    const isFirstInCategory = !(quiz.category in lastClearedInCategory);
-    const wouldBeLockedBySequence = !isFirstInCategory && !lastClearedInCategory[quiz.category];
+    const inTrack = T && (quizId in trackPrev);
+    let wouldBeLockedBySequence;
+    let lockHint = '';
+    if (inTrack) {
+      // セミナーの系列の中：同じ系列の1つ前をクリアすると開く（カテゴリ内の表示順には従わない）
+      const prev = trackPrev[quizId];
+      wouldBeLockedBySequence = prev !== null && !isCleared(prev);
+      if (wouldBeLockedBySequence) lockHint = '先に「' + titleById[prev] + '」をクリアしてください';
+    } else {
+      const isFirstInCategory = !(quiz.category in lastClearedInCategory);
+      wouldBeLockedBySequence = !isFirstInCategory && !lastClearedInCategory[quiz.category];
+      if (wouldBeLockedBySequence) lockHint = '前のクイズをクリアすると挑戦できます';
+      lastClearedInCategory[quiz.category] = cleared;
+      // 特別セミナー以外は、セミナーをすべてクリアするまで開かない
+      if (T && quiz.category !== T.gateCategory && gateRemaining > 0) {
+        wouldBeLockedBySequence = true;
+        lockHint = 'まず「' + T.gateCategory + '」をすべてクリアすると挑戦できます（あと' + gateRemaining + '本）';
+      }
+    }
     const manuallyUnlocked = isManuallyUnlocked(quizId);
-    lastClearedInCategory[quiz.category] = cleared;
     return {
       quiz, quizId, cleared,
       perfect: isPerfectCleared(quizId),
-      wouldBeLockedBySequence, manuallyUnlocked,
+      wouldBeLockedBySequence, manuallyUnlocked, lockHint,
+      rank: (quizId in seminarRank) ? seminarRank[quizId] : 1000 + idx,
       locked: wouldBeLockedBySequence && !manuallyUnlocked,
     };
   });
 }
 
-// 「続きから」で開くクイズ＝表示順で最初の、挑戦できる（ロックされていない）未クリアのクイズ。全部クリア済みならnull。
+// 「続きから」で開くクイズ＝挑戦できる（ロックされていない）未クリアのうち、優先順位が一番高いもの。全部クリア済みならnull。
+// 優先順位（rank）は、ルールのない店舗では、表示順と同じ。
 function pickNextQuiz(states) {
-  return states.find(s => !s.locked && !s.cleared) || null;
+  const open = states.filter(s => !s.locked && !s.cleared);
+  if (!open.length) return null;
+  return open.reduce((a, b) => (b.rank < a.rank ? b : a));
 }
 
 // リッチメニューなどから「?go=next」「?go=progress」付きで開かれた時の行き先を返す。
