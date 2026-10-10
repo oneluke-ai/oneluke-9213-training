@@ -179,7 +179,7 @@ const trailEl = document.getElementById('trail');
       body.innerHTML = `
         <div class="node-cat">${escapeHtml(quiz.category)}</div>
         <div class="node-title">${escapeHtml(quiz.title)}</div>
-        <div class="lock-hint">前のクイズをクリアすると挑戦できます</div>
+        <div class="lock-hint">${escapeHtml(st.lockHint || '前のクイズをクリアすると挑戦できます')}</div>
       `;
       const lockBadge = document.createElement('div');
       lockBadge.className = 'lock-badge';
