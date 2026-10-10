@@ -362,6 +362,19 @@
     </div>
   </section>
 
+  <section>
+    <h2>📋 見る順番（クイズ・動画）</h2>
+    <p class="section-desc">今の設定です。上から順に進みます。「開く条件」を満たすと、そのクイズが開きます（管理者の手動解放は、条件に関係なく開きます）。</p>
+    <div class="table-wrap">
+      <table id="orderTable">
+        <thead>
+          <tr><th class="num">番号</th><th>カテゴリ</th><th>クイズ（動画）</th><th>先生</th><th>ワンストリーム</th><th>YouTube</th><th>開く条件</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
 </div>
 
 <div id="staffModal">
@@ -402,6 +415,7 @@
 
 <script src="quiz-engine.js"></script>
 <script src="practice-check.js"></script>
+<script src="video-links.js"></script>
 <script>
 /**
  * 研修クイズ 管理ダッシュボード ver002（2026-09-05）
@@ -1320,6 +1334,41 @@ document.getElementById('practiceItems').addEventListener('click', async (e) => 
   }
 });
 
+// --- 見る順番の一覧（クイズ・動画）。表示順・開く条件は、quiz-engine.js の TRAINING_ORDER / TRAINING_DISPLAY と同じ設定から作る ---
+function renderOrderTable() {
+  const tbody = document.querySelector('#orderTable tbody');
+  const links = {};
+  (window.VIDEO_LINKS || []).forEach(v => { if (v.quizId) links[v.quizId] = v; });
+  const list = QUIZ_CATALOG.map(q => ({ title: q.title, category: q.category, file: q.quizId + '.html' }));
+  applyTrainingDisplayOrder(list);
+  const titleById = {};
+  list.forEach(q => { titleById[q.file.replace(/\.html$/, '')] = q.title; });
+  const T = (typeof TRAINING_ORDER !== 'undefined') ? TRAINING_ORDER : null;
+  const TEACHER = ['福山先生', '丹下さん'];
+  const trackOf = {}, prevOf = {};
+  if (T) T.tracks.forEach((t, ti) => t.forEach((id, i) => { trackOf[id] = ti; prevOf[id] = i > 0 ? t[i - 1] : null; }));
+  const seminarCount = T ? list.filter(q => q.category === T.gateCategory).length : 0;
+  const prevInCat = {};
+  tbody.innerHTML = list.map((q, i) => {
+    const id = q.file.replace(/\.html$/, '');
+    let cond, teacher = '';
+    if (T && id in trackOf) {
+      teacher = TEACHER[trackOf[id]] || '';
+      cond = prevOf[id] ? '「' + titleById[prevOf[id]] + '」をクリア後' : '最初から開いています';
+    } else {
+      const prev = prevInCat[q.category];
+      const first = !prev;
+      cond = (T && q.category !== T.gateCategory) ? '「' + T.gateCategory + '」全' + seminarCount + '本をクリア後' + (first ? '' : '、かつ「' + titleById[prev] + '」をクリア後')
+        : (first ? '最初から開いています' : '「' + titleById[prev] + '」をクリア後');
+    }
+    prevInCat[q.category] = id;
+    const v = links[id] || {};
+    // URLそのものを表示する（押すと、新しいタブで開く）
+    const urlCell = u => u ? `<a href="${escapeHtml(u)}" target="_blank" rel="noopener" style="word-break:break-all; font-size:12px;">${escapeHtml(u)}</a>` : '—';
+    return `<tr><td class="num">${i + 1}</td><td>${escapeHtml(q.category)}</td><td>${escapeHtml(q.title)}</td><td>${escapeHtml(teacher)}</td><td>${urlCell(v.onestream)}</td><td>${urlCell(v.youtube)}</td><td>${escapeHtml(cond)}</td></tr>`;
+  }).join('');
+}
+
 async function loadDashboard() {
   document.getElementById('loading').style.display = 'block';
   document.getElementById('errorBox').style.display = 'none';
@@ -1379,6 +1428,8 @@ async function loadDashboard() {
       console.warn('[ダッシュボード] 「実行チェックログ」テーブルが見つからないため、実行チェックは表示のみになります:', e.message);
     }
     renderPracticeTable();
+
+    try { renderOrderTable(); } catch (e) { console.warn('[ダッシュボード] 見る順番の一覧を作れませんでした:', e.message); }
 
     document.getElementById('loading').style.display = 'none';
     document.getElementById('content').style.display = 'block';
