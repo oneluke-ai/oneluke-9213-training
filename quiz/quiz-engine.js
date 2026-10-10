@@ -980,8 +980,41 @@ const TRAINING_ORDER = {
   ],
 };
 
+// 一覧に出す順番（2026-10-10・石神井公園駅店だけ）。カテゴリの並びと、各カテゴリの中の「おすすめの順」。
+// ここに書いていないクイズは、元の並びのまま、そのカテゴリの最後に付く。HTMLの元の並びは、変えない。
+const TRAINING_DISPLAY = {
+  categories: ['特別セミナー', '犬の扱い方', 'グルーマー', 'カット'],
+  within: {
+    '犬の扱い方': ['leash-tsukekata', 'dakko-no-shikata', 'ashi-no-agekata', 'zenshi-tsumekiri', 'koshi-tsumekiri',
+      'tsume-yasuri', 'ashiura-clipping', 'shampoo-machine', 'blow-dry', 'dry-blow', 'leash-hazushikata'],
+    'カット': ['oshiri-cut', 'muzzle-cut', 'body-clipper', 'cut-mushroom', 'cut-asymmetry', 'cut-mohican',
+      'cut-teddybear', 'asime-cut-sougou'],
+  },
+};
+
+function applyTrainingDisplayOrder(quizzes) {
+  const T = (typeof TRAINING_ORDER !== 'undefined') ? TRAINING_ORDER : null;
+  if (!T || typeof TRAINING_DISPLAY === 'undefined') return;
+  const idOf = q => q.file.replace(/\.html$/, '');
+  const D = TRAINING_DISPLAY;
+  const orig = new Map(quizzes.map((q, i) => [q, i]));
+  const trackPos = {};
+  T.tracks.forEach((t, ti) => t.forEach((id, i) => { trackPos[id] = ti * 1000 + i; }));
+  const catRank = q => { const i = D.categories.indexOf(q.category); return i < 0 ? 99 : i; };
+  const inRank = q => {
+    const id = idOf(q);
+    if (id in trackPos) return trackPos[id];
+    const w = D.within[q.category];
+    const i = w ? w.indexOf(id) : -1;
+    return i < 0 ? 500 + orig.get(q) : i;   // 書いていないものは、元の並びのまま最後
+  };
+  // 呼び出し元の配列そのものを並べ替える（一覧とマイ進捗が、同じ並びになる）
+  quizzes.sort((a, b) => (catRank(a) - catRank(b)) || (inRank(a) - inRank(b)));
+}
+
 function computeQuizStates(quizzes) {
   const T = (typeof TRAINING_ORDER !== 'undefined') ? TRAINING_ORDER : null;
+  applyTrainingDisplayOrder(quizzes);
   const idOf = q => q.file.replace(/\.html$/, '');
   const titleById = {};
   quizzes.forEach(q => { titleById[idOf(q)] = q.title; });
