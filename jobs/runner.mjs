@@ -107,7 +107,12 @@ const reportText = report.subject + '\n\n' + report.body;
 const ownerTo = latestUserId(RC.OWNER_NAME);
 let reportResult = '';
 if (MODE === 'live') {
-  if (!ownerTo) { reportResult = 'オーナー未連携のため送れません'; problems.push('owner-unlinked'); }
+  if (!ownerTo) {
+    // オーナーがLINE未連携の間は、事務局（Takeshiさん）に、代わりに送る（レポートが、誰にも届かない状態を防ぐ）
+    if (!rehearsalTo) { reportResult = 'オーナー・事務局とも未連携のため送れません'; problems.push('owner-unlinked'); }
+    else if ((await push(rehearsalTo, '【週次レポート・オーナー未連携のため、事務局に送っています】\n' + RC.OWNER_NAME + 'さんがLINE連携を済ませると、本人に届きます。\n\n' + reportText)) === 200) reportResult = 'オーナー未連携のため、事務局に送信しました';
+    else { reportResult = '事務局への送信に失敗'; problems.push('report-send-failed'); }
+  }
   else if ((await push(ownerTo, reportText)) === 200) reportResult = '送信しました';
   else { reportResult = '送信に失敗'; problems.push('report-send-failed'); }
 } else if (rehearsalTo) {
