@@ -1,0 +1,26 @@
+name: 研修クイズ 毎週の通知（石神井公園駅店）
+
+on:
+  schedule:
+    # 毎週月曜 朝8時（日本時間）＝ 日曜 23:00（UTC）
+    - cron: '0 23 * * 0'
+  workflow_dispatch:   # 手動で動かす（Actionsの画面の「Run workflow」）
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: 通知を送る（初期は、リハーサル＝事務局だけに送る）
+        run: node jobs/runner.mjs
+        env:
+          # 本番にするときは、リポジトリの Variables に WEEKLY_MODE = live を登録する
+          MODE: ${{ vars.WEEKLY_MODE || 'rehearsal' }}
+          LINE_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          AIRTABLE_TOKEN: ${{ secrets.AIRTABLE_READONLY_TOKEN }}
