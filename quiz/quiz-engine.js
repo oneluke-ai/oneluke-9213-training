@@ -132,6 +132,9 @@ const OTHER_NAME_OPTION = "その他（手入力）";
 const STAFF_LIFF_ID = "2011828933-Ls4Oo14n";
 const STAFF_LINE_WEBHOOK_URL = "https://hook.us2.make.com/nc9uovfc17g6qmzb1xa4w7ljmhggo2hc";
 const STAFF_LINE_SHARED_SECRET = "9213";
+// 【石神井公園駅店だけ】LINE連携が済んでいない端末では、クイズを始められない（2026-10-13）。
+// 連携は「LINEのメニュー → 研修クイズ一覧」を開いた時に行われる。false にすると、元（連携なしでも受けられる）に戻る。
+const REQUIRE_LINE_LINK = true;
 
 // ============================================================
 // 管理ダッシュボードからの手動解放（本来なら「前のクイズをクリアするまでロック」される
@@ -681,7 +684,46 @@ function initQuiz(config) {
 
   // --- ①.5 クイズの前に「動画を確認しましたか？」を挟む ---
   // 「確認した」を押した時点で、無言でAirtableに開始イベントを記録する（画面には何も表示しない）。
-  function showVideoConfirm() {
+  // クイズを始める前の入口チェック（石神井公園駅店だけ）：①LINE連携 ②鍵（見る順番）。
+  // 止める時は、案内画面を出して、動画確認・クイズには進ませない。
+  async function checkEntryGate() {
+    if (typeof REQUIRE_LINE_LINK !== 'undefined' && REQUIRE_LINE_LINK && !alreadyLineLinked()) return { type: 'line' };
+    try {
+      await loadVideoLinks();
+      await syncManualUnlocks();
+      const list = (window.VIDEO_LINKS || []).filter(v => v.quizId)
+        .map(v => ({ title: v.title, category: v.category, file: v.quizId + '.html' }));
+      if (list.length && config.quiz_id) {
+        const st = computeQuizStates(list).find(s => s.quizId === config.quiz_id);
+        if (st && st.locked) return { type: 'lock', hint: st.lockHint };
+      }
+    } catch (e) {
+      console.log('[入口チェック] 鍵の確認をスキップしました:', e.message);
+    }
+    return null;
+  }
+
+  function showGateScreen(gate) {
+    const hub = config.hub_url || 'index.html';
+    const box = document.createElement('div');
+    box.id = 'gateScreen';
+    box.style.cssText = 'text-align:center; padding:8px 4px;';
+    box.innerHTML = gate.type === 'line'
+      ? `<div class="mascot-big">${PAW_SVG}</div>
+         <p style="font-weight:700; font-size:16px; margin:0 0 10px;">最初に、LINEとの連携が必要です</p>
+         <p style="margin:0 0 14px; line-height:1.7;">LINEのトーク画面の下のメニュー<br><b>「研修クイズ一覧」</b>を1回開いてください。<br>連携は、それだけで完了します。</p>
+         <a class="hub-link" style="display:inline-block;" href="https://liff.line.me/${STAFF_LIFF_ID}">▶ LINEで研修クイズ一覧を開く</a>
+         <p style="margin:14px 0 0; font-size:13px; opacity:.75;">連携が済むと、このクイズが始められます。</p>`
+      : `<div class="mascot-big">${PAW_SVG}</div>
+         <p style="font-weight:700; font-size:16px; margin:0 0 10px;">このクイズは、まだ開けません</p>
+         <p style="margin:0 0 14px; line-height:1.7;">${escapeHtml(gate.hint || '前のクイズをクリアすると挑戦できます')}</p>
+         <a class="hub-link" style="display:inline-block;" href="${escapeHtml(hub)}">← クイズ一覧へ戻る</a>`;
+    videoConfirmScreen.parentNode.insertBefore(box, videoConfirmScreen);
+  }
+
+  async function showVideoConfirm() {
+    const gate = await checkEntryGate();
+    if (gate) { showGateScreen(gate); return; }
     videoConfirmScreen.style.display = 'block';
     document.getElementById('confirmWatchedBtn').onclick = () => {
       videoConfirmScreen.style.display = 'none';
