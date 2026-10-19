@@ -274,74 +274,74 @@ window.VIDEO_LINKS = [
   },
   {
     "quizId": "yasashisa-grooming-1-1-part1",
-    "title": "やさしさGrooming第一弾① Part1（0:00〜11:40・01.グルーマーの仕事）",
+    "title": "やさしさGrooming第一弾① Part1（0:00〜12:40・01.グルーマーの仕事）",
     "category": "特別セミナー",
     "onestream": "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/68418c8f-71d9-4cca-be82-f7caed35c09b",
     "youtube": "https://youtu.be/8sjK9gxLJ_I",
-    "note": "※この動画は Part1〜Part3 で同じYouTube動画です。このクイズの範囲：0:00〜11:40",
+    "note": "※この動画は Part1〜Part3 で同じYouTube動画です。このクイズの範囲：0:00〜12:40",
     "quizPending": false
   },
   {
     "quizId": "yasashisa-grooming-1-1-part2",
-    "title": "やさしさGrooming第一弾① Part2（11:40〜20:50・02.「やさしさ」とは？前半）",
+    "title": "やさしさGrooming第一弾① Part2（12:40〜19:20・グルーマーの価値／犬という動物）",
     "category": "特別セミナー",
     "onestream": "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/68418c8f-71d9-4cca-be82-f7caed35c09b",
     "youtube": "https://youtu.be/8sjK9gxLJ_I",
-    "note": "※この動画は Part1〜Part3 で同じYouTube動画です。このクイズの範囲：11:40〜20:50",
+    "note": "※この動画は Part1〜Part3 で同じYouTube動画です。このクイズの範囲：12:40〜19:20",
     "quizPending": false
   },
   {
     "quizId": "yasashisa-grooming-1-1-part3",
-    "title": "やさしさGrooming第一弾① Part3（20:50〜24:00・犬の役割の変化）",
+    "title": "やさしさGrooming第一弾① Part3（19:20〜24:00・犬の役割の変化）",
     "category": "特別セミナー",
     "onestream": "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/68418c8f-71d9-4cca-be82-f7caed35c09b",
     "youtube": "https://youtu.be/8sjK9gxLJ_I",
-    "note": "※この動画は Part1〜Part3 で同じYouTube動画です。このクイズの範囲：20:50〜24:00",
+    "note": "※この動画は Part1〜Part3 で同じYouTube動画です。このクイズの範囲：19:20〜24:00",
     "quizPending": false
   },
   {
     "quizId": "yasashisa-grooming-1-2-part1",
-    "title": "やさしさGrooming第一弾② Part1（0:00〜9:30）",
+    "title": "やさしさGrooming第一弾② Part1（0:00〜10:40・やさしさとは／関節）",
     "category": "特別セミナー",
     "onestream": "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/e5bef1bf-34ee-4f63-8346-0867254a1e71",
     "youtube": "https://youtu.be/Pxm34f5vI0A",
-    "note": "※この動画は Part1〜Part3 で同じYouTube動画です。このクイズの範囲：0:00〜9:30",
+    "note": "※この動画は Part1〜Part3 で同じYouTube動画です。このクイズの範囲：0:00〜10:40",
     "quizPending": false
   },
   {
     "quizId": "yasashisa-grooming-1-2-part2",
-    "title": "やさしさGrooming第一弾② Part2（9:30〜20:20）",
+    "title": "やさしさGrooming第一弾② Part2（10:40〜22:15・犬と人間の特性／困る例）",
     "category": "特別セミナー",
     "onestream": "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/e5bef1bf-34ee-4f63-8346-0867254a1e71",
     "youtube": "https://youtu.be/Pxm34f5vI0A",
-    "note": "※この動画は Part1〜Part3 で同じYouTube動画です。このクイズの範囲：9:30〜20:20",
+    "note": "※この動画は Part1〜Part3 で同じYouTube動画です。このクイズの範囲：10:40〜22:15",
     "quizPending": false
   },
   {
     "quizId": "yasashisa-grooming-1-2-part3",
-    "title": "やさしさGrooming第一弾② Part3（20:20〜25:57・意識するPOINT）",
+    "title": "やさしさGrooming第一弾② Part3（22:15〜25:57・意識するPOINT）",
     "category": "特別セミナー",
     "onestream": "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/e5bef1bf-34ee-4f63-8346-0867254a1e71",
     "youtube": "https://youtu.be/Pxm34f5vI0A",
-    "note": "※この動画は Part1〜Part3 で同じYouTube動画です。このクイズの範囲：20:20〜25:57",
+    "note": "※この動画は Part1〜Part3 で同じYouTube動画です。このクイズの範囲：22:15〜25:57",
     "quizPending": false
   },
   {
     "quizId": "yasashisa-grooming-1-3-part1",
-    "title": "やさしさGrooming第一弾③ Part1（0:00〜9:40・03.アイテムの活用）",
+    "title": "やさしさGrooming第一弾③ Part1（0:00〜10:40・03.アイテムの活用）",
     "category": "特別セミナー",
     "onestream": "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/1a8aa033-9f46-4758-93a1-d9cd6e80e80a",
     "youtube": "https://youtu.be/pnO2v4GoN70",
-    "note": "※この動画は Part1〜Part2 で同じYouTube動画です。このクイズの範囲：0:00〜9:40",
+    "note": "※この動画は Part1〜Part2 で同じYouTube動画です。このクイズの範囲：0:00〜10:40",
     "quizPending": false
   },
   {
     "quizId": "yasashisa-grooming-1-3-part2",
-    "title": "やさしさGrooming第一弾③ Part2（9:40〜31:42・サポートクッション＆スヌード）",
+    "title": "やさしさGrooming第一弾③ Part2（10:40〜31:42・スヌード＆質疑応答）",
     "category": "特別セミナー",
     "onestream": "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/1a8aa033-9f46-4758-93a1-d9cd6e80e80a",
     "youtube": "https://youtu.be/pnO2v4GoN70",
-    "note": "※この動画は Part1〜Part2 で同じYouTube動画です。このクイズの範囲：9:40〜31:42",
+    "note": "※この動画は Part1〜Part2 で同じYouTube動画です。このクイズの範囲：10:40〜31:42",
     "quizPending": false
   },
   {
