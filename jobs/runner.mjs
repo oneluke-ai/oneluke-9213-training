@@ -104,20 +104,32 @@ if (MODE === 'live') {
 // ---- 2) 週次オーナーレポート ----
 const report = reportLib.buildReport(reportQuiz, now, RC);
 const reportText = report.subject + '\n\n' + report.body;
-const ownerTo = latestUserId(RC.OWNER_NAME);
+// レポートを受け取るオーナー（複数）。名簿の氏名と同じ表記。増減したら、ここを直す
+const OWNER_NAMES = ['宮松 香代子', '宮松 和浩'];
+const ownerLinks = OWNER_NAMES.map(n => ({ name: n, userId: latestUserId(n) }));
+const unlinkedOwners = ownerLinks.filter(o => !o.userId).map(o => o.name);
+// 同じLINEアカウントに、複数のオーナーが紐づいている時は、1通だけ送る
+const ownerTargets = [...new Map(ownerLinks.filter(o => o.userId).map(o => [o.userId, o])).values()];
+const unlinkedNote = unlinkedOwners.length
+  ? '\n※' + unlinkedOwners.map(n => n + 'さん').join('、') + 'は、まだLINE連携していません（連携するまで、本人には届きません）。'
+  : '';
 let reportResult = '';
 if (MODE === 'live') {
-  if (!ownerTo) {
-    // オーナーがLINE未連携の間は、事務局（Takeshiさん）に、代わりに送る（レポートが、誰にも届かない状態を防ぐ）
-    if (!rehearsalTo) { reportResult = 'オーナー・事務局とも未連携のため送れません'; problems.push('owner-unlinked'); }
-    else if ((await push(rehearsalTo, '【週次レポート・オーナー未連携のため、事務局に送っています】\n' + RC.OWNER_NAME + 'さんがLINE連携を済ませると、本人に届きます。\n\n' + reportText)) === 200) reportResult = 'オーナー未連携のため、事務局に送信しました';
-    else { reportResult = '事務局への送信に失敗'; problems.push('report-send-failed'); }
+  let sentOwners = 0, failedOwners = 0;
+  for (const o of ownerTargets) {
+    if ((await push(o.userId, reportText)) === 200) sentOwners++; else failedOwners++;
   }
-  else if ((await push(ownerTo, reportText)) === 200) reportResult = '送信しました';
-  else { reportResult = '送信に失敗'; problems.push('report-send-failed'); }
+  if (failedOwners > 0) problems.push('report-send-failed');
+  reportResult = `オーナー ${sentOwners}/${OWNER_NAMES.length}人に送信`;
+  // 連携していないオーナーがいる間は、事務局（Takeshiさん）にも、送る（誰にも届かない状態を防ぐ）
+  if (unlinkedOwners.length > 0) {
+    if (!rehearsalTo) { reportResult += '、事務局も未連携のため、未連携分は送れません'; problems.push('owner-unlinked'); }
+    else if ((await push(rehearsalTo, '【週次レポート・オーナー未連携のため、事務局に送っています】' + unlinkedNote + '\n\n' + reportText)) === 200) reportResult += '、未連携分は事務局に送信';
+    else { reportResult += '、事務局への送信に失敗'; problems.push('report-send-failed'); }
+  }
 } else if (rehearsalTo) {
-  const st = await push(rehearsalTo, '【リハーサル・週次レポート】\n本番では、オーナー（' + RC.OWNER_NAME + 'さん）に、次の内容を送ります。'
-    + (ownerTo ? '' : '\n※オーナーは、まだLINE連携していません（連携するまで、本番では送れません）。') + '\n\n' + reportText);
+  const st = await push(rehearsalTo, '【リハーサル・週次レポート】\n本番では、オーナー（' + OWNER_NAMES.map(n => n + 'さん').join('、') + '）に、次の内容を送ります。'
+    + unlinkedNote + '\n\n' + reportText);
   if (st === 200) reportResult = 'リハーサルを送信しました';
   else { reportResult = 'リハーサルの送信に失敗'; problems.push('rehearsal-report-send-failed'); }
 } else {
