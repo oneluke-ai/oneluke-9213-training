@@ -355,7 +355,7 @@ window.VIDEO_LINKS = [
   },
   {
     "quizId": "dog-stress-master-2-part2",
-    "title": "Dog Stress Master(福山先生)第二弾 Part2（9:20〜16:40）",
+    "title": "Dog Stress Master(福山先生)第二弾 Part2（9:20〜19:40）",
     "category": "特別セミナー",
     "onestream": "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/adb2c9da-3594-484a-a945-2b9f294d64b7",
     "youtube": null,
@@ -364,7 +364,7 @@ window.VIDEO_LINKS = [
   },
   {
     "quizId": "dog-stress-master-2-part3",
-    "title": "Dog Stress Master(福山先生)第二弾 Part3（16:40〜29:03）",
+    "title": "Dog Stress Master(福山先生)第二弾 Part3（19:40〜29:03）",
     "category": "特別セミナー",
     "onestream": "https://one-stream.io/user/Kz5dLFNrBLQRVn8TAV6ma4bWXjG2/video/adb2c9da-3594-484a-a945-2b9f294d64b7",
     "youtube": null,
